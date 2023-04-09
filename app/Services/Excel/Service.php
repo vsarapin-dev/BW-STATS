@@ -33,6 +33,14 @@ class Service
             $result_id = $this->getResultId($row[5]);
             $map_id = $this->getMapId($row[1]);
 
+            $enemyCurrentMmr = intval($row[3]);
+            $enemyMaxMmr = intval($row[4]);
+            $isSmurf = false;
+            if ($enemyCurrentMmr > 0 && $enemyMaxMmr > 0)
+            {
+                $isSmurf = $enemyMaxMmr - $enemyCurrentMmr > 200;
+            }
+
             GameStat::create([
                 'user_id' => Auth::id(),
                 'season_id' => $season_id,
@@ -41,13 +49,14 @@ class Service
                 'my_race_id' => $myRace,
                 'enemy_random_race_id' => $enemyRandomRace,
                 'enemy_race_id' => $enemyRace,
-                'enemy_current_mmr' => intval($row[3]),
-                'enemy_max_mmr' => intval($row[4]),
+                'enemy_current_mmr' => $enemyCurrentMmr,
+                'enemy_max_mmr' => $enemyMaxMmr,
                 'result_id' => $result_id,
                 'result_comment' => $row[6],
                 'enemy_nickname' => $row[7],
                 'enemy_login' => strtolower($row[8]),
                 'global_comment' => $row[9],
+                'is_smurf' => $isSmurf,
             ]);
         }
     }

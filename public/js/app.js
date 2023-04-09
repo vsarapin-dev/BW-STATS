@@ -2565,6 +2565,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
   computed: {
     allResults: function allResults() {
       var _this = this;
+      if (!this.bestDataResults) return;
       return this.bestDataResults.map(function (i) {
         var parsedWinPercentage = parseFloat(i.win_percentage);
         return _objectSpread(_objectSpread({}, i), {}, {
@@ -2669,86 +2670,88 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "FinalStatCardComponent",
   props: ['finalResults'],
   data: function data() {
     return {
-      models: [],
-      totals: {
-        raw: {
-          total_games: 0,
-          real_wins: 0,
-          general_wins: 0
-        },
-        percents: {
-          real_wins: 0,
-          general_wins: 0
-        }
-      },
-      bestStatColumnNames: [{
-        name: 'Min MMR',
-        columnNumber: 1,
-        rule: 'counter',
-        modelValue: 'minSeasonMmr'
-      }, {
-        name: 'Max MMR',
-        columnNumber: 1,
-        rule: 'counter',
-        modelValue: 'maxSeasonMmr'
-      }, {
-        name: 'Final MMR',
-        columnNumber: 1,
-        rule: 'counter',
-        modelValue: 'finalSeasonMmr'
-      }, {
-        name: 'Win streak',
-        columnNumber: 2
-      }, {
-        name: 'Lose streak',
-        columnNumber: 2
-      }, {
-        name: 'Placement matches',
-        columnNumber: 3
-      }, {
-        name: 'Smurf %',
-        columnNumber: 3
-      }, {
-        name: 'W/O %',
-        columnNumber: 3
-      }, {
-        name: 'Season started',
-        columnNumber: 4
-      }, {
-        name: 'Season ended',
-        columnNumber: 4
-      }]
+      minSeasonMmr: null,
+      maxSeasonMmr: null,
+      finalSeasonMmr: null,
+      winStreak: null,
+      loseStreak: null,
+      placementMatches: null,
+      smurfPercent: null,
+      woPercent: null,
+      seasonStarted: null,
+      seasonEnded: null
     };
-  },
-  computed: {
-    vModelArray: function vModelArray() {
-      return this.bestStatColumnNames.filter(function (i) {
-        return 'modelValue' in i;
-      }).map(function (i) {
-        return i.modelValue;
-      });
-    }
-  },
-  created: function created() {
-    this.models = this.vModelArray;
   },
   watch: {
     finalResults: function finalResults(value) {
-      this.finalResults = value;
+      var _value$percents, _value$percents2, _value$maxStreaks, _value$maxStreaks2;
+      this.woPercent = (value === null || value === void 0 ? void 0 : (_value$percents = value.percents) === null || _value$percents === void 0 ? void 0 : _value$percents.woPercent) + '%';
+      this.smurfPercent = (value === null || value === void 0 ? void 0 : (_value$percents2 = value.percents) === null || _value$percents2 === void 0 ? void 0 : _value$percents2.smurfPercent) + '%';
+      this.winStreak = value === null || value === void 0 ? void 0 : (_value$maxStreaks = value.maxStreaks) === null || _value$maxStreaks === void 0 ? void 0 : _value$maxStreaks.maxDefeats;
+      this.loseStreak = value === null || value === void 0 ? void 0 : (_value$maxStreaks2 = value.maxStreaks) === null || _value$maxStreaks2 === void 0 ? void 0 : _value$maxStreaks2.maxWins;
     }
   },
   methods: {
     checkLength: function checkLength(value) {
       var _this = this;
-      if (this.models[value].length > 4) {
+      if (this[value].length > 4) {
         this.$nextTick(function () {
-          _this.models[value] = _this.models[value].slice(0, 4);
+          _this[value] = _this[value].slice(0, 4);
         });
       }
     }
@@ -3823,6 +3826,12 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -3852,7 +3861,6 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
       isOpenedFilterDialog: false,
       seasons: [],
       bestDataResults: [],
-      finalResults: [],
       selectedSeason: null,
       lastUpdatedAtDate: null,
       selectedToDelete: [],
@@ -3955,18 +3963,18 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
         season_id: this.selectedSeason
       }).then(function (res) {
         _this2.resetVariables();
-        if (res.data.hasOwnProperty('gameStatFilterResult') && res.data.hasOwnProperty('gameStatTotalValueResult') && res.data.hasOwnProperty('currentSeason') && res.data.hasOwnProperty('availableSeasons') && res.data.hasOwnProperty('lastUpdated') && res.data.hasOwnProperty('bestMaps') && res.data.gameStatFilterResult !== null && res.data.gameStatTotalValueResult !== null && res.data.availableSeasons !== null && res.data.currentSeason !== null && res.data.lastUpdated !== null && res.data.bestMaps !== null) {
-          _this2.bestDataResults = res.data.bestMaps;
+        if (res.data.hasOwnProperty('data') && res.data.hasOwnProperty('gameStatTotalValueResult') && res.data.hasOwnProperty('currentSeason') && res.data.hasOwnProperty('availableSeasons') && res.data.hasOwnProperty('lastUpdated') && res.data.hasOwnProperty('bestDataResults') && res.data.data !== null && res.data.gameStatTotalValueResult !== null && res.data.availableSeasons !== null && res.data.currentSeason !== null && res.data.lastUpdated !== null && res.data.bestDataResults !== null) {
+          _this2.bestDataResults = res.data.bestDataResults;
           _this2.lastUpdatedAtDate = res.data.lastUpdated;
-          _this2.stats = res.data.gameStatFilterResult.data;
+          _this2.stats = res.data.data.data;
           _this2.totals.raw = res.data.gameStatTotalValueResult;
           _this2.seasons = res.data.availableSeasons;
           _this2.selectedSeason = res.data.currentSeason.id;
-          _this2.setPageVariables(res.data.gameStatFilterResult);
+          _this2.setPageVariables(res.data.data);
           _this2.computeWinPercents(_this2.totals);
         }
         _this2.loadingData = false;
-        console.log(res.data.bestMaps);
+        console.log(_this2.bestDataResults);
       })["catch"](function (e) {
         _this2.loadingData = false;
         console.log(e.response);
@@ -3997,7 +4005,6 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
     },
     resetVariables: function resetVariables() {
       this.resetTotals();
-      this.finalResults = [];
       this.bestDataResults = [];
       this.lastUpdatedAtDate = null;
       this.stats = [];
@@ -24077,112 +24084,119 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "v-card",
-    {
-      staticClass: "mt-10",
-      attrs: { width: _vm.$vuetify.breakpoint.xs ? "100%" : "250" },
-    },
-    [
-      _c(
-        "v-container",
+  return _vm.allResults
+    ? _c(
+        "v-card",
+        {
+          staticClass: "mt-10",
+          attrs: { width: _vm.$vuetify.breakpoint.xs ? "100%" : "250" },
+        },
         [
           _c(
-            "v-row",
+            "v-container",
             [
               _c(
-                "v-col",
-                { attrs: { sm: "4" } },
-                _vm._l(_vm.allResults, function (dataResult, index) {
-                  return _c(
-                    "v-row",
-                    [
-                      _c(
-                        "v-card-text",
-                        { staticClass: "text-truncate" },
+                "v-row",
+                [
+                  _c(
+                    "v-col",
+                    { attrs: { sm: "4" } },
+                    _vm._l(_vm.allResults, function (dataResult, index) {
+                      return _c(
+                        "v-row",
+                        { key: dataResult.name + "-" + index },
                         [
-                          _c("span", { staticClass: "caption" }, [
-                            _vm._v(_vm._s(dataResult.name)),
-                          ]),
-                          _vm._v(" "),
-                          _vm.allResults.length - 1 > index
-                            ? _c("v-divider", { staticClass: "mt-1" })
-                            : _vm._e(),
+                          _c(
+                            "v-card-text",
+                            { staticClass: "text-truncate" },
+                            [
+                              _c("span", { staticClass: "caption" }, [
+                                _vm._v(_vm._s(dataResult.name)),
+                              ]),
+                              _vm._v(" "),
+                              _vm.allResults.length - 1 > index
+                                ? _c("v-divider", { staticClass: "mt-1" })
+                                : _vm._e(),
+                            ],
+                            1
+                          ),
                         ],
                         1
-                      ),
-                    ],
+                      )
+                    }),
                     1
-                  )
-                }),
-                1
-              ),
-              _vm._v(" "),
-              _c("v-divider", {
-                staticClass: "mt-2 mb-2",
-                attrs: { vertical: "" },
-              }),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { sm: "4" } },
-                _vm._l(_vm.allResults, function (dataResult, index) {
-                  return _c(
-                    "v-row",
-                    [
-                      _c(
-                        "v-card-text",
-                        {
-                          staticClass: "text-center",
-                          style: { backgroundColor: dataResult.cell_color },
-                        },
+                  ),
+                  _vm._v(" "),
+                  _c("v-divider", {
+                    staticClass: "mt-2 mb-2",
+                    attrs: { vertical: "" },
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { sm: "4" } },
+                    _vm._l(_vm.allResults, function (dataResult, index) {
+                      return _c(
+                        "v-row",
+                        { key: dataResult.cell_color + "-" + index },
                         [
-                          _c("span", { staticClass: "caption" }, [
-                            _vm._v(_vm._s(dataResult.win_percentage) + "%"),
-                          ]),
-                        ]
-                      ),
-                    ],
-                    1
-                  )
-                }),
-                1
-              ),
-              _vm._v(" "),
-              _c("v-divider", {
-                staticClass: "mt-2 mb-2",
-                attrs: { vertical: "" },
-              }),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { sm: "4" } },
-                _vm._l(_vm.allResults, function (dataResult, index) {
-                  return _c(
-                    "v-row",
-                    [
-                      _c(
-                        "v-card-text",
-                        { staticClass: "text-center" },
-                        [
-                          _c("span", { staticClass: "caption" }, [
-                            _vm._v(
-                              _vm._s(dataResult.wins) +
-                                " - " +
-                                _vm._s(dataResult.losses)
-                            ),
-                          ]),
-                          _vm._v(" "),
-                          _vm.allResults.length - 1 > index
-                            ? _c("v-divider", { staticClass: "mt-1" })
-                            : _vm._e(),
+                          _c(
+                            "v-card-text",
+                            {
+                              staticClass: "text-center",
+                              style: { backgroundColor: dataResult.cell_color },
+                            },
+                            [
+                              _c("span", { staticClass: "caption" }, [
+                                _vm._v(_vm._s(dataResult.win_percentage) + "%"),
+                              ]),
+                            ]
+                          ),
                         ],
                         1
-                      ),
-                    ],
+                      )
+                    }),
                     1
-                  )
-                }),
+                  ),
+                  _vm._v(" "),
+                  _c("v-divider", {
+                    staticClass: "mt-2 mb-2",
+                    attrs: { vertical: "" },
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { sm: "4" } },
+                    _vm._l(_vm.allResults, function (dataResult, index) {
+                      return _c(
+                        "v-row",
+                        { key: dataResult.win_percentage + "-" + index },
+                        [
+                          _c(
+                            "v-card-text",
+                            { staticClass: "text-center" },
+                            [
+                              _c("span", { staticClass: "caption" }, [
+                                _vm._v(
+                                  _vm._s(dataResult.wins) +
+                                    " - " +
+                                    _vm._s(dataResult.losses)
+                                ),
+                              ]),
+                              _vm._v(" "),
+                              _vm.allResults.length - 1 > index
+                                ? _c("v-divider", { staticClass: "mt-1" })
+                                : _vm._e(),
+                            ],
+                            1
+                          ),
+                        ],
+                        1
+                      )
+                    }),
+                    1
+                  ),
+                ],
                 1
               ),
             ],
@@ -24190,10 +24204,8 @@ var render = function () {
           ),
         ],
         1
-      ),
-    ],
-    1
-  )
+      )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -24218,175 +24230,276 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "v-card",
-    {
-      staticClass: "mt-10",
-      attrs: { width: _vm.$vuetify.breakpoint.xs ? "100%" : "500" },
-    },
-    [
-      _c(
-        "v-container",
+  return _vm.finalResults.percents && _vm.finalResults.maxStreaks
+    ? _c(
+        "v-card",
+        {
+          staticClass: "mt-10",
+          attrs: { width: _vm.$vuetify.breakpoint.xs ? "100%" : "550" },
+        },
         [
           _c(
-            "v-row",
+            "v-container",
             [
               _c(
-                "v-col",
-                { attrs: { xs: "12" } },
-                _vm._l(_vm.bestStatColumnNames, function (statColumn) {
-                  return statColumn.columnNumber === 1
-                    ? _c(
+                "v-row",
+                [
+                  _c(
+                    "v-col",
+                    { attrs: { xs: "12" } },
+                    [
+                      _c(
                         "v-card-text",
-                        {
-                          key: statColumn.modelValue,
-                          staticClass: "pt-3 pb-0",
-                        },
+                        { staticClass: "pt-3 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
-                            attrs: { dense: "", label: statColumn.name },
+                            attrs: { dense: "", label: "Min MMR" },
                             on: {
                               input: function ($event) {
-                                return _vm.checkLength(statColumn.modelValue)
+                                return _vm.checkLength(_vm.minSeasonMmr)
                               },
                             },
                             model: {
-                              value: _vm.models[statColumn.modelValue],
+                              value: _vm.minSeasonMmr,
                               callback: function ($$v) {
-                                _vm.$set(_vm.models, statColumn.modelValue, $$v)
+                                _vm.minSeasonMmr = $$v
                               },
-                              expression: "models[statColumn.modelValue]",
+                              expression: "minSeasonMmr",
                             },
                           }),
                         ],
                         1
-                      )
-                    : _vm._e()
-                }),
-                1
-              ),
-              _vm._v(" "),
-              _c("v-divider", {
-                staticClass: "mt-2 mb-2",
-                attrs: { vertical: "" },
-              }),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { xs: "12" } },
-                _vm._l(_vm.bestStatColumnNames, function (statColumn) {
-                  return statColumn.columnNumber === 2
-                    ? _c(
+                      ),
+                      _vm._v(" "),
+                      _c(
                         "v-card-text",
-                        {
-                          key: statColumn.modelValue,
-                          staticClass: "pt-3 pb-0 caption",
-                        },
+                        { staticClass: "pt-3 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
-                            attrs: { dense: "", label: statColumn.name },
+                            attrs: { dense: "", label: "Max MMR" },
                             on: {
                               input: function ($event) {
-                                return _vm.checkLength(statColumn.modelValue)
+                                return _vm.checkLength(_vm.maxSeasonMmr)
                               },
                             },
                             model: {
-                              value: _vm.models[statColumn.modelValue],
+                              value: _vm.maxSeasonMmr,
                               callback: function ($$v) {
-                                _vm.$set(_vm.models, statColumn.modelValue, $$v)
+                                _vm.maxSeasonMmr = $$v
                               },
-                              expression: "models[statColumn.modelValue]",
+                              expression: "maxSeasonMmr",
                             },
                           }),
                         ],
                         1
-                      )
-                    : _vm._e()
-                }),
-                1
-              ),
-              _vm._v(" "),
-              _c("v-divider", {
-                staticClass: "mt-2 mb-2",
-                attrs: { vertical: "" },
-              }),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { xs: "12" } },
-                _vm._l(_vm.bestStatColumnNames, function (statColumn) {
-                  return statColumn.columnNumber === 3
-                    ? _c(
+                      ),
+                      _vm._v(" "),
+                      _c(
                         "v-card-text",
-                        {
-                          key: statColumn.modelValue,
-                          staticClass: "pt-3 pb-0",
-                        },
+                        { staticClass: "pt-3 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
-                            attrs: { dense: "", label: statColumn.name },
+                            attrs: { dense: "", label: "Final MMR" },
                             on: {
                               input: function ($event) {
-                                return _vm.checkLength(statColumn.modelValue)
+                                return _vm.checkLength(_vm.finalSeasonMmr)
                               },
                             },
                             model: {
-                              value: _vm.models[statColumn.modelValue],
+                              value: _vm.finalSeasonMmr,
                               callback: function ($$v) {
-                                _vm.$set(_vm.models, statColumn.modelValue, $$v)
+                                _vm.finalSeasonMmr = $$v
                               },
-                              expression: "models[statColumn.modelValue]",
+                              expression: "finalSeasonMmr",
                             },
                           }),
                         ],
                         1
-                      )
-                    : _vm._e()
-                }),
-                1
-              ),
-              _vm._v(" "),
-              _c("v-divider", {
-                staticClass: "mt-2 mb-2",
-                attrs: { vertical: "" },
-              }),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { xs: "12" } },
-                _vm._l(_vm.bestStatColumnNames, function (statColumn) {
-                  return statColumn.columnNumber === 4
-                    ? _c(
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("v-divider", {
+                    staticClass: "mt-2 mb-2",
+                    attrs: { vertical: "" },
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { xs: "12" } },
+                    [
+                      _c(
                         "v-card-text",
-                        {
-                          key: statColumn.modelValue,
-                          staticClass: "pt-3 pb-0",
-                        },
+                        { staticClass: "pt-3 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
-                            attrs: { dense: "", label: statColumn.name },
-                            on: {
-                              input: function ($event) {
-                                return _vm.checkLength(statColumn.modelValue)
-                              },
-                            },
+                            attrs: { dense: "", label: "Season started" },
                             model: {
-                              value: _vm.models[statColumn.modelValue],
+                              value: _vm.seasonStarted,
                               callback: function ($$v) {
-                                _vm.$set(_vm.models, statColumn.modelValue, $$v)
+                                _vm.seasonStarted = $$v
                               },
-                              expression: "models[statColumn.modelValue]",
+                              expression: "seasonStarted",
                             },
                           }),
                         ],
                         1
-                      )
-                    : _vm._e()
-                }),
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-text",
+                        { staticClass: "pt-3 pb-0" },
+                        [
+                          _c("v-text-field", {
+                            staticClass: "caption",
+                            attrs: { dense: "", label: "Season ended" },
+                            model: {
+                              value: _vm.seasonEnded,
+                              callback: function ($$v) {
+                                _vm.seasonEnded = $$v
+                              },
+                              expression: "seasonEnded",
+                            },
+                          }),
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-text",
+                        { staticClass: "pt-3 pb-0" },
+                        [
+                          _c("v-text-field", {
+                            staticClass: "caption",
+                            attrs: { dense: "", label: "Placement matches" },
+                            model: {
+                              value: _vm.placementMatches,
+                              callback: function ($$v) {
+                                _vm.placementMatches = $$v
+                              },
+                              expression: "placementMatches",
+                            },
+                          }),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("v-divider", {
+                    staticClass: "mt-2 mb-2",
+                    attrs: { vertical: "" },
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { xs: "12" } },
+                    [
+                      _c(
+                        "v-card-text",
+                        { staticClass: "pt-3 pb-0" },
+                        [
+                          _c("v-text-field", {
+                            staticClass: "caption",
+                            attrs: { disabled: "", dense: "", label: "Smurfs" },
+                            model: {
+                              value: _vm.smurfPercent,
+                              callback: function ($$v) {
+                                _vm.smurfPercent = $$v
+                              },
+                              expression: "smurfPercent",
+                            },
+                          }),
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-text",
+                        { staticClass: "pt-3 pb-0" },
+                        [
+                          _c("v-text-field", {
+                            staticClass: "caption",
+                            attrs: { disabled: "", dense: "", label: "W/O" },
+                            model: {
+                              value: _vm.woPercent,
+                              callback: function ($$v) {
+                                _vm.woPercent = $$v
+                              },
+                              expression: "woPercent",
+                            },
+                          }),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("v-divider", {
+                    staticClass: "mt-2 mb-2",
+                    attrs: { vertical: "" },
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { xs: "12" } },
+                    [
+                      _c(
+                        "v-card-text",
+                        { staticClass: "pt-3 pb-0 caption" },
+                        [
+                          _c("v-text-field", {
+                            staticClass: "caption",
+                            attrs: {
+                              disabled: "",
+                              dense: "",
+                              label: "Win streak",
+                            },
+                            model: {
+                              value: _vm.winStreak,
+                              callback: function ($$v) {
+                                _vm.winStreak = $$v
+                              },
+                              expression: "winStreak",
+                            },
+                          }),
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-text",
+                        { staticClass: "pt-3 pb-0 caption" },
+                        [
+                          _c("v-text-field", {
+                            staticClass: "caption",
+                            attrs: {
+                              disabled: "",
+                              dense: "",
+                              label: "Lose streak",
+                            },
+                            model: {
+                              value: _vm.loseStreak,
+                              callback: function ($$v) {
+                                _vm.loseStreak = $$v
+                              },
+                              expression: "loseStreak",
+                            },
+                          }),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                ],
                 1
               ),
             ],
@@ -24394,10 +24507,8 @@ var render = function () {
           ),
         ],
         1
-      ),
-    ],
-    1
-  )
+      )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -24422,34 +24533,72 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "v-card",
-    {
-      staticClass: "mt-10",
-      attrs: { width: _vm.$vuetify.breakpoint.xs ? "100%" : "320" },
-    },
-    [
-      _c(
-        "v-container",
+  return _vm.totals.raw.total_games > 0
+    ? _c(
+        "v-card",
+        {
+          staticClass: "mt-10",
+          attrs: { width: _vm.$vuetify.breakpoint.xs ? "100%" : "320" },
+        },
         [
           _c(
-            "v-row",
+            "v-container",
             [
               _c(
-                "v-col",
-                { attrs: { sm: "4" } },
+                "v-row",
                 [
                   _c(
-                    "v-row",
+                    "v-col",
+                    { attrs: { sm: "4" } },
                     [
                       _c(
-                        "v-card-text",
-                        { staticClass: "caption text-truncate" },
+                        "v-row",
                         [
-                          _vm._v(
-                            "\n                        Total games\n                        "
+                          _c(
+                            "v-card-text",
+                            { staticClass: "caption text-truncate" },
+                            [
+                              _vm._v(
+                                "\n                        Total games\n                        "
+                              ),
+                              _c("v-divider", { staticClass: "mt-1" }),
+                            ],
+                            1
                           ),
-                          _c("v-divider", { staticClass: "mt-1" }),
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-row",
+                        [
+                          _c(
+                            "v-card-text",
+                            { staticClass: "caption text-truncate" },
+                            [
+                              _vm._v(
+                                "\n                        Real wins\n                        "
+                              ),
+                              _c("v-divider", { staticClass: "mt-1" }),
+                            ],
+                            1
+                          ),
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-row",
+                        [
+                          _c(
+                            "v-card-text",
+                            { staticClass: "caption text-truncate" },
+                            [
+                              _vm._v(
+                                "\n                        General wins\n                    "
+                              ),
+                            ]
+                          ),
                         ],
                         1
                       ),
@@ -24457,17 +24606,69 @@ var render = function () {
                     1
                   ),
                   _vm._v(" "),
+                  _c("v-divider", {
+                    staticClass: "mt-2 mb-2",
+                    attrs: { vertical: "" },
+                  }),
+                  _vm._v(" "),
                   _c(
-                    "v-row",
+                    "v-col",
+                    { attrs: { sm: "4" } },
                     [
                       _c(
-                        "v-card-text",
-                        { staticClass: "caption text-truncate" },
+                        "v-row",
                         [
-                          _vm._v(
-                            "\n                        Real wins\n                        "
+                          _c(
+                            "v-card-text",
+                            { staticClass: "caption text-center" },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.totals.raw.total_games) +
+                                  "\n                        "
+                              ),
+                              _c("v-divider", { staticClass: "mt-1" }),
+                            ],
+                            1
                           ),
-                          _c("v-divider", { staticClass: "mt-1" }),
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-row",
+                        [
+                          _c(
+                            "v-card-text",
+                            { staticClass: "caption text-center" },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.totals.raw.real_wins) +
+                                  "\n                        "
+                              ),
+                              _c("v-divider", { staticClass: "mt-1" }),
+                            ],
+                            1
+                          ),
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-row",
+                        [
+                          _c(
+                            "v-card-text",
+                            { staticClass: "caption text-center" },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.totals.raw.general_wins) +
+                                  "\n                    "
+                              ),
+                            ]
+                          ),
                         ],
                         1
                       ),
@@ -24475,166 +24676,80 @@ var render = function () {
                     1
                   ),
                   _vm._v(" "),
+                  _c("v-divider", {
+                    staticClass: "mt-2 mb-2",
+                    attrs: { vertical: "" },
+                  }),
+                  _vm._v(" "),
                   _c(
-                    "v-row",
+                    "v-col",
+                    { attrs: { sm: "4" } },
                     [
                       _c(
-                        "v-card-text",
-                        { staticClass: "caption text-truncate" },
+                        "v-row",
                         [
-                          _vm._v(
-                            "\n                        General wins\n                    "
+                          _c(
+                            "v-card-text",
+                            { staticClass: "caption text-center" },
+                            [_c("v-divider", { staticClass: "mt-6" })],
+                            1
                           ),
-                        ]
-                      ),
-                    ],
-                    1
-                  ),
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c("v-divider", {
-                staticClass: "mt-2 mb-2",
-                attrs: { vertical: "" },
-              }),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { sm: "4" } },
-                [
-                  _c(
-                    "v-row",
-                    [
-                      _c(
-                        "v-card-text",
-                        { staticClass: "caption text-center" },
-                        [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(_vm.totals.raw.total_games) +
-                              "\n                        "
-                          ),
-                          _c("v-divider", { staticClass: "mt-1" }),
                         ],
                         1
                       ),
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "v-row",
-                    [
+                      _vm._v(" "),
                       _c(
-                        "v-card-text",
-                        { staticClass: "caption text-center" },
+                        "v-row",
                         [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(_vm.totals.raw.real_wins) +
-                              "\n                        "
+                          _c(
+                            "v-card-text",
+                            {
+                              staticClass: "caption text-center",
+                              style: {
+                                color:
+                                  _vm.totals.percents.real_wins >= 50
+                                    ? "green"
+                                    : "red",
+                              },
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.totals.percents.real_wins) +
+                                  "%\n                        "
+                              ),
+                              _c("v-divider", { staticClass: "mt-1" }),
+                            ],
+                            1
                           ),
-                          _c("v-divider", { staticClass: "mt-1" }),
                         ],
                         1
                       ),
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "v-row",
-                    [
+                      _vm._v(" "),
                       _c(
-                        "v-card-text",
-                        { staticClass: "caption text-center" },
+                        "v-row",
                         [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(_vm.totals.raw.general_wins) +
-                              "\n                    "
+                          _c(
+                            "v-card-text",
+                            {
+                              staticClass: "caption text-center",
+                              style: {
+                                color:
+                                  _vm.totals.percents.general_wins >= 50
+                                    ? "green"
+                                    : "red",
+                              },
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.totals.percents.general_wins) +
+                                  "%\n                    "
+                              ),
+                            ]
                           ),
-                        ]
-                      ),
-                    ],
-                    1
-                  ),
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c("v-divider", {
-                staticClass: "mt-2 mb-2",
-                attrs: { vertical: "" },
-              }),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { sm: "4" } },
-                [
-                  _c(
-                    "v-row",
-                    [
-                      _c(
-                        "v-card-text",
-                        { staticClass: "caption text-center" },
-                        [_c("v-divider", { staticClass: "mt-6" })],
-                        1
-                      ),
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "v-row",
-                    [
-                      _c(
-                        "v-card-text",
-                        {
-                          staticClass: "caption text-center",
-                          style: {
-                            color:
-                              _vm.totals.percents.real_wins >= 50
-                                ? "green"
-                                : "red",
-                          },
-                        },
-                        [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(_vm.totals.percents.real_wins) +
-                              "%\n                        "
-                          ),
-                          _c("v-divider", { staticClass: "mt-1" }),
                         ],
                         1
-                      ),
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "v-row",
-                    [
-                      _c(
-                        "v-card-text",
-                        {
-                          staticClass: "caption text-center",
-                          style: {
-                            color:
-                              _vm.totals.percents.general_wins >= 50
-                                ? "green"
-                                : "red",
-                          },
-                        },
-                        [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(_vm.totals.percents.general_wins) +
-                              "%\n                    "
-                          ),
-                        ]
                       ),
                     ],
                     1
@@ -24647,10 +24762,8 @@ var render = function () {
           ),
         ],
         1
-      ),
-    ],
-    1
-  )
+      )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -25901,12 +26014,12 @@ var render = function () {
           _vm._v(" "),
           _c("BestStatCardComponent", {
             class: _vm.$vuetify.breakpoint.smAndUp ? ["ml-2", "mr-2"] : "ml-3",
-            attrs: { bestDataResults: _vm.bestDataResults },
+            attrs: { bestDataResults: _vm.bestDataResults.bestMaps },
           }),
           _vm._v(" "),
           _c("FinalStatCardComponent", {
             class: _vm.$vuetify.breakpoint.smAndUp ? ["ml-2", "mr-2"] : "ml-5",
-            attrs: { finalResults: _vm.finalResults },
+            attrs: { finalResults: _vm.bestDataResults },
           }),
         ],
         1

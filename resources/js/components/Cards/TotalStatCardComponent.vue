@@ -1,5 +1,5 @@
 <template>
-    <v-card class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '320'">
+    <v-card v-if="totals.raw.total_games > 0" class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '320'">
         <v-container>
             <v-row>
                 <v-col sm="4">

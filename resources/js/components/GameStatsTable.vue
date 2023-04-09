@@ -13,9 +13,15 @@
         />
 
         <v-row>
-            <TotalStatCardComponent :totals="totals" :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
-            <BestStatCardComponent :bestDataResults="bestDataResults" :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
-            <FinalStatCardComponent :finalResults="finalResults" :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-5'"/>
+            <TotalStatCardComponent
+                :totals="totals"
+                :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
+            <BestStatCardComponent
+                :bestDataResults="bestDataResults.bestMaps"
+                :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
+            <FinalStatCardComponent
+                :finalResults="bestDataResults"
+                :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-5'"/>
         </v-row>
         <v-data-table
             :page.sync="page"
@@ -147,7 +153,6 @@ export default {
             isOpenedFilterDialog: false,
             seasons: [],
             bestDataResults: [],
-            finalResults: [],
             selectedSeason: null,
             lastUpdatedAtDate: null,
             selectedToDelete: [],
@@ -233,30 +238,30 @@ export default {
             })
                 .then(res => {
                     this.resetVariables();
-                    if (res.data.hasOwnProperty('gameStatFilterResult') &&
+                    if (res.data.hasOwnProperty('data') &&
                         res.data.hasOwnProperty('gameStatTotalValueResult') &&
                         res.data.hasOwnProperty('currentSeason') &&
                         res.data.hasOwnProperty('availableSeasons') &&
                         res.data.hasOwnProperty('lastUpdated') &&
-                        res.data.hasOwnProperty('bestMaps') &&
-                        res.data.gameStatFilterResult !== null &&
+                        res.data.hasOwnProperty('bestDataResults') &&
+                        res.data.data !== null &&
                         res.data.gameStatTotalValueResult !== null &&
                         res.data.availableSeasons !== null &&
                         res.data.currentSeason !== null &&
                         res.data.lastUpdated !== null &&
-                        res.data.bestMaps !== null)
+                        res.data.bestDataResults !== null)
                     {
-                        this.bestDataResults = res.data.bestMaps;
+                        this.bestDataResults = res.data.bestDataResults;
                         this.lastUpdatedAtDate = res.data.lastUpdated;
-                        this.stats = res.data.gameStatFilterResult.data;
+                        this.stats = res.data.data.data;
                         this.totals.raw = res.data.gameStatTotalValueResult;
                         this.seasons = res.data.availableSeasons;
                         this.selectedSeason = res.data.currentSeason.id;
-                        this.setPageVariables(res.data.gameStatFilterResult);
+                        this.setPageVariables(res.data.data);
                         this.computeWinPercents(this.totals);
                     }
                     this.loadingData = false;
-                    console.log(res.data.bestMaps)
+                    console.log(this.bestDataResults)
                 })
                 .catch(e => {
                     this.loadingData = false;
@@ -290,7 +295,6 @@ export default {
         },
         resetVariables() {
             this.resetTotals();
-            this.finalResults = [];
             this.bestDataResults = [];
             this.lastUpdatedAtDate = null;
             this.stats = [];

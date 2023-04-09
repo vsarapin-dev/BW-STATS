@@ -1,9 +1,9 @@
 <template>
-    <v-card class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '250'">
+    <v-card v-if="allResults" class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '250'">
         <v-container>
             <v-row>
                 <v-col sm="4">
-                    <v-row v-for="(dataResult, index) in allResults">
+                    <v-row v-for="(dataResult, index) in allResults" :key="`${dataResult.name}-${index}`">
                         <v-card-text class="text-truncate">
                             <span class="caption">{{ dataResult.name }}</span>
                             <v-divider class="mt-1" v-if="allResults.length - 1 > index"></v-divider>
@@ -12,7 +12,7 @@
                 </v-col>
                 <v-divider vertical class="mt-2 mb-2"></v-divider>
                 <v-col sm="4">
-                    <v-row v-for="(dataResult, index) in allResults">
+                    <v-row v-for="(dataResult, index) in allResults" :key="`${dataResult.cell_color}-${index}`">
                         <v-card-text class="text-center" :style="{backgroundColor: dataResult.cell_color}">
                             <span class="caption">{{ dataResult.win_percentage }}%</span>
                         </v-card-text>
@@ -20,7 +20,7 @@
                 </v-col>
                 <v-divider vertical class="mt-2 mb-2"></v-divider>
                 <v-col sm="4">
-                    <v-row v-for="(dataResult, index) in allResults">
+                    <v-row v-for="(dataResult, index) in allResults" :key="`${dataResult.win_percentage}-${index}`">
                         <v-card-text class="text-center">
                             <span class="caption">{{ dataResult.wins }} - {{ dataResult.losses }}</span>
                             <v-divider class="mt-1" v-if="allResults.length - 1 > index"></v-divider>
@@ -38,6 +38,8 @@ export default {
     props: ['bestDataResults'],
     computed: {
         allResults() {
+            if (!this.bestDataResults) return;
+
             return this.bestDataResults.map(i => {
                 let parsedWinPercentage = parseFloat(i.win_percentage);
                 return {

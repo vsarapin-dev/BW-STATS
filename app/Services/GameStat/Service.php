@@ -9,6 +9,7 @@ use App\Http\Resources\Season\SeasonResource;
 use App\Models\GameStat;
 use App\Models\GameStatTotalValue;
 use App\Models\Map;
+use App\Models\Result;
 use App\Models\Season;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -29,6 +30,9 @@ class Service
 
         $gameStatTotalValueResult = $this->getWinStats($seasonId);
         $bestMaps = $this->getBestMaps($seasonId);
+        $woPercent = $this->getWOPercent($seasonId);
+        $smurfPercent = $this->getSmurfPercent($seasonId);
+        $maxStreaks = $this->getMaxStreaks($seasonId);
 
 
         $gameStatFilterResult = $this->paginate(
@@ -38,12 +42,19 @@ class Service
         );
 
         return response()->json([
-            'gameStatFilterResult' => $gameStatFilterResult,
+            'data' => $gameStatFilterResult,
             'gameStatTotalValueResult' => $gameStatTotalValueResult,
             'currentSeason' => $seasonId ? new SeasonResource(Season::whereId($seasonId)->first()) : null,
             'lastUpdated' => $gameStatLastCreatedDate ? Carbon::parse($gameStatLastCreatedDate)->format('d F Y') : null,
             'availableSeasons' => SeasonResource::collection(Season::whereIn('id', GameStat::select('season_id')->distinct()->get()->pluck('season_id'))->get()),
-            'bestMaps' => $bestMaps,
+            'bestDataResults' => [
+                'bestMaps' => $bestMaps,
+                'maxStreaks' => $maxStreaks,
+                'percents' => [
+                    'woPercent' => $woPercent,
+                    'smurfPercent' => $smurfPercent,
+                ],
+            ],
         ]);
     }
 
@@ -97,10 +108,10 @@ class Service
         return new LengthAwarePaginator($items->forPage($page, $perPage)->values(), $items->count(), $perPage, $page, $options);
     }
 
-    private function getWinStats($seasonId): Collection
+    private function getWinStats($season_id): Collection
     {
         $userId = Auth::id();
-        $queryString = GameStat::whereUserId($userId)->whereSeasonId($seasonId);
+        $queryString = GameStat::whereUserId($userId)->whereSeasonId($season_id);
 
         $total_games = $queryString->count();
 
@@ -121,16 +132,86 @@ class Service
         ]);
     }
 
-    private function getBestMaps($seasonId)
+    private function getBestMaps($season_id): ?Collection
     {
         return Map::select('maps.name', DB::raw('SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) AS wins, SUM(CASE WHEN results.name = "L" THEN 1 ELSE 0 END) AS losses, (SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) / (SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) + SUM(CASE WHEN results.name = "L" THEN 1 ELSE 0 END))) * 100 AS win_percentage'))
             ->join('game_stats', 'maps.id', '=', 'game_stats.map_id')
             ->join('results', 'game_stats.result_id', '=', 'results.id')
             ->where('game_stats.user_id', Auth::id())
-            ->where('game_stats.season_id', $seasonId)
+            ->where('game_stats.season_id', $season_id)
             ->groupBy('maps.id')
             ->orderByDesc('win_percentage')
             ->limit(3)
             ->get();
+    }
+
+    private function getSmurfPercent($season_id): float
+    {
+        $total_games = GameStat::whereUserId(Auth::id())
+            ->whereSeasonId($season_id)
+            ->count();
+
+        $smurfs_games = GameStat::whereUserId(Auth::id())
+            ->whereSeasonId($season_id)
+            ->whereIsSmurf(true)
+            ->count();
+
+        $smurfPercent = $total_games > 0 ? $smurfs_games / $total_games * 100 : 0;
+
+        return round((float)$smurfPercent, 2);
+    }
+
+    private function getWOPercent($season_id): float
+    {
+        $games = GameStat::whereUserId(Auth::id())
+            ->whereSeasonId($season_id)
+            ->get();
+
+        $games->load('result');
+
+        $total_games = $games->count();
+        $wo_games = $games->filter(function ($game) {
+            return $game->result->name == 'W/O';
+        })->count();
+
+        $wo_percent = $total_games > 0 ? $wo_games / $total_games * 100 : 0;
+        return round((float)$wo_percent, 2);
+    }
+
+    private function getMaxStreaks($season_id): array
+    {
+        $winResultId = Result::whereName('W')->first()->id;
+        $defeatResultId = Result::whereName('L')->first()->id;
+
+        $gameStats = GameStat::whereUserId(Auth::id())
+            ->whereSeasonId($season_id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $maxWins = $this->computeGameResultStreak($gameStats, $winResultId);
+        $maxDefeats = $this->computeGameResultStreak($gameStats, $defeatResultId);
+
+        return [
+            'maxWins' => $maxWins,
+            'maxDefeats' => $maxDefeats
+        ];
+    }
+
+    private function computeGameResultStreak($stats, $resultToFind): int
+    {
+        $maxValue = 0;
+        $currentValue = 0;
+
+        foreach ($stats->pluck('result_id') as $resultId) {
+            if ($resultId === $resultToFind) {
+                $currentValue++;
+                if ($currentValue > $maxValue) {
+                    $maxValue = $currentValue;
+                }
+            } else {
+                $currentValue = 0;
+            }
+        }
+        return $maxValue;
     }
 }
