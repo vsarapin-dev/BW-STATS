@@ -39,6 +39,7 @@
                     <v-card-text class="pt-3 pb-0">
                         <v-text-field
                             v-model="seasonStarted"
+                            @input="inputUpdated"
                             dense
                             class="caption"
                             label="Season started"
@@ -48,6 +49,7 @@
                     <v-card-text class="pt-3 pb-0">
                         <v-text-field
                             v-model="seasonEnded"
+                            @input="inputUpdated"
                             dense
                             class="caption"
                             label="Season ended"
@@ -57,6 +59,7 @@
                     <v-card-text class="pt-3 pb-0">
                         <v-text-field
                             v-model="placementMatches"
+                            @input="inputUpdated"
                             dense
                             class="caption"
                             label="Placement matches"
@@ -148,6 +151,9 @@ export default {
                     this[value] = this[value].slice(0, 4);
                 })
             }
+        },
+        inputUpdated(value) {
+            console.log(value)
         },
     }
 }
