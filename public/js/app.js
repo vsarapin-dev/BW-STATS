@@ -2719,6 +2719,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "FinalStatCardComponent",
@@ -2754,6 +2757,9 @@ __webpack_require__.r(__webpack_exports__);
           _this[value] = _this[value].slice(0, 4);
         });
       }
+    },
+    inputUpdated: function inputUpdated(value) {
+      console.log(value);
     }
   }
 });
@@ -24339,6 +24345,7 @@ var render = function () {
                           _c("v-text-field", {
                             staticClass: "caption",
                             attrs: { dense: "", label: "Season started" },
+                            on: { input: _vm.inputUpdated },
                             model: {
                               value: _vm.seasonStarted,
                               callback: function ($$v) {
@@ -24358,6 +24365,7 @@ var render = function () {
                           _c("v-text-field", {
                             staticClass: "caption",
                             attrs: { dense: "", label: "Season ended" },
+                            on: { input: _vm.inputUpdated },
                             model: {
                               value: _vm.seasonEnded,
                               callback: function ($$v) {
@@ -24377,6 +24385,7 @@ var render = function () {
                           _c("v-text-field", {
                             staticClass: "caption",
                             attrs: { dense: "", label: "Placement matches" },
+                            on: { input: _vm.inputUpdated },
                             model: {
                               value: _vm.placementMatches,
                               callback: function ($$v) {
