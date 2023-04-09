@@ -1,12 +1,14 @@
 <template>
-    <v-card v-if="finalResults.percents && finalResults.maxStreaks" class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '550'">
+    <v-card v-if="finalResults.percents && finalResults.maxStreaks" class="mt-10"
+            :width="$vuetify.breakpoint.xs ? '100%' : '550'">
+        <SnackBar :visible="showSnackBar" :message="'Stats updated successfully'" @close="showSnackBar = false"/>
         <v-container>
             <v-row>
                 <v-col xs="12">
                     <v-card-text class="pt-3 pb-0">
                         <v-text-field
                             v-model="minSeasonMmr"
-                            @input="checkLength(minSeasonMmr)"
+                            @input="inputUpdated"
                             dense
                             class="caption"
                             label="Min MMR"
@@ -16,7 +18,7 @@
                     <v-card-text class="pt-3 pb-0">
                         <v-text-field
                             v-model="maxSeasonMmr"
-                            @input="checkLength(maxSeasonMmr)"
+                            @input="inputUpdated"
                             dense
                             class="caption"
                             label="Max MMR"
@@ -26,7 +28,7 @@
                     <v-card-text class="pt-3 pb-0">
                         <v-text-field
                             v-model="finalSeasonMmr"
-                            @input="checkLength(finalSeasonMmr)"
+                            @input="inputUpdated"
                             dense
                             class="caption"
                             label="Final MMR"
@@ -115,15 +117,23 @@
                 </v-col>
             </v-row>
         </v-container>
+        <div class="d-flex justify-end mr-2 mb-2">
+            <v-btn v-if="showButton" x-small color="success" @click="updateFinalStartCard">Update</v-btn>
+        </div>
     </v-card>
 </template>
 
 <script>
+import API from "../../api";
+import SnackBar from "../SnackBar";
+
 export default {
     name: "FinalStatCardComponent",
     props: ['finalResults'],
     data() {
         return {
+            showSnackBar: false,
+            showButton: false,
             minSeasonMmr: null,
             maxSeasonMmr: null,
             finalSeasonMmr: null,
@@ -136,6 +146,9 @@ export default {
             seasonEnded: null,
         }
     },
+    components: {
+        SnackBar,
+    },
     watch: {
         finalResults(value) {
             this.woPercent = value?.percents?.woPercent + '%';
@@ -145,20 +158,26 @@ export default {
         },
     },
     methods: {
-        checkLength(value) {
-            if (this[value].length > 4) {
-                this.$nextTick(() => {
-                    this[value] = this[value].slice(0, 4);
-                })
-            }
+        inputUpdated() {
+            this.showButton = true;
         },
-        inputUpdated(value) {
-            console.log(value)
+        updateFinalStartCard() {
+            this.showButton = false;
+            API.post('/api/auth/result-cards/update', {
+                'minSeasonMmr': this.minSeasonMmr,
+                'maxSeasonMmr': this.maxSeasonMmr,
+                'finalSeasonMmr': this.finalSeasonMmr,
+                'placementMatches': this.placementMatches,
+                'seasonStarted': this.seasonStarted,
+                'seasonEnded': this.seasonEnded,
+            })
+            .then(res => {
+                this.showSnackBar = true
+            })
+            .catch(e => {
+                console.log(e);
+            })
         },
     }
 }
 </script>
-
-<style scoped>
-
-</style>

@@ -3,11 +3,11 @@
 
 namespace App\Services\GameStat;
 
+use GeneralizedStats;
 use App\Http\Filters\GameStatFilter;
 use App\Http\Resources\GameStat\GameStatResource;
 use App\Http\Resources\Season\SeasonResource;
 use App\Models\GameStat;
-use App\Models\GameStatTotalValue;
 use App\Models\Map;
 use App\Models\Result;
 use App\Models\Season;
@@ -28,21 +28,20 @@ class Service
         $seasonId = $data['season_id'] ?? $userStatQuery->max('season_id');
         $gameStatLastCreatedDate = $userStatQuery->max('created_at');
 
-        $gameStatTotalValueResult = $this->getWinStats($seasonId);
+        $gameStatTotalValueResult = $this->getTotalWinStats($seasonId);
         $bestMaps = $this->getBestMaps($seasonId);
         $woPercent = $this->getWOPercent($seasonId);
         $smurfPercent = $this->getSmurfPercent($seasonId);
         $maxStreaks = $this->getMaxStreaks($seasonId);
 
-
-        $gameStatFilterResult = $this->paginate(
+        $gameStatDataTableResult = $this->paginate(
             GameStatResource::collection(GameStat::whereUserId(Auth::id())->whereSeasonId($seasonId)->orderBy('game_number', 'desc')->get()),
             $data['itemsPerPage'],
             $data['page']
         );
 
         return response()->json([
-            'data' => $gameStatFilterResult,
+            'data' => $gameStatDataTableResult,
             'gameStatTotalValueResult' => $gameStatTotalValueResult,
             'currentSeason' => $seasonId ? new SeasonResource(Season::whereId($seasonId)->first()) : null,
             'lastUpdated' => $gameStatLastCreatedDate ? Carbon::parse($gameStatLastCreatedDate)->format('d F Y') : null,
@@ -63,7 +62,6 @@ class Service
         if (!$data) $data['user_id'] = Auth::id();
 
         $filter = app()->make(GameStatFilter::class, ['queryParams' => array_filter($data)]);
-        $gameStatTotalValueResult = GameStatTotalValue::where('user_id', Auth::id())->first();
         $gameStatFilterResult = $this->paginate(
             GameStatResource::collection(GameStat::filter($filter)->orderBy('game_number', 'desc')->get()),
             $data['itemsPerPage'],
@@ -72,7 +70,6 @@ class Service
 
         return response()->json([
             'gameStatFilterResult' => $gameStatFilterResult,
-            'gameStatTotalValueResult' => $gameStatTotalValueResult,
         ]);
     }
 
@@ -108,7 +105,7 @@ class Service
         return new LengthAwarePaginator($items->forPage($page, $perPage)->values(), $items->count(), $perPage, $page, $options);
     }
 
-    private function getWinStats($season_id): Collection
+    private function getTotalWinStats($season_id): Collection
     {
         $userId = Auth::id();
         $queryString = GameStat::whereUserId($userId)->whereSeasonId($season_id);

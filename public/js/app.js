@@ -2602,6 +2602,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../api */ "./resources/js/api.js");
+/* harmony import */ var _SnackBar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../SnackBar */ "./resources/js/components/SnackBar.vue");
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2723,11 +2730,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "FinalStatCardComponent",
   props: ['finalResults'],
   data: function data() {
     return {
+      showSnackBar: false,
+      showButton: false,
       minSeasonMmr: null,
       maxSeasonMmr: null,
       finalSeasonMmr: null,
@@ -2740,6 +2751,9 @@ __webpack_require__.r(__webpack_exports__);
       seasonEnded: null
     };
   },
+  components: {
+    SnackBar: _SnackBar__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
   watch: {
     finalResults: function finalResults(value) {
       var _value$percents, _value$percents2, _value$maxStreaks, _value$maxStreaks2;
@@ -2750,16 +2764,24 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
-    checkLength: function checkLength(value) {
-      var _this = this;
-      if (this[value].length > 4) {
-        this.$nextTick(function () {
-          _this[value] = _this[value].slice(0, 4);
-        });
-      }
+    inputUpdated: function inputUpdated() {
+      this.showButton = true;
     },
-    inputUpdated: function inputUpdated(value) {
-      console.log(value);
+    updateFinalStartCard: function updateFinalStartCard() {
+      var _this = this;
+      this.showButton = false;
+      _api__WEBPACK_IMPORTED_MODULE_0__["default"].post('/api/auth/result-cards/update', {
+        'minSeasonMmr': this.minSeasonMmr,
+        'maxSeasonMmr': this.maxSeasonMmr,
+        'finalSeasonMmr': this.finalSeasonMmr,
+        'placementMatches': this.placementMatches,
+        'seasonStarted': this.seasonStarted,
+        'seasonEnded': this.seasonEnded
+      }).then(function (res) {
+        _this.showSnackBar = true;
+      })["catch"](function (e) {
+        console.log(e);
+      });
     }
   }
 });
@@ -3980,7 +4002,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
           _this2.computeWinPercents(_this2.totals);
         }
         _this2.loadingData = false;
-        console.log(_this2.bestDataResults);
+        console.log(res.data);
       })["catch"](function (e) {
         _this2.loadingData = false;
         console.log(e.response);
@@ -4213,16 +4235,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "SnackBar",
-  props: ['visible'],
-  data: function data() {
-    return {
-      text: "Saved successfully"
-    };
-  },
+  props: ['visible', 'message'],
   computed: {
+    messageText: {
+      get: function get() {
+        if (this.message.length === 0) {
+          return 'Saved successfully';
+        }
+        return this.message;
+      },
+      set: function set(value) {
+        this.message = value;
+      }
+    },
     show: {
       get: function get() {
         return this.visible;
@@ -22865,7 +22894,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _FinalStatCardComponent_vue_vue_type_template_id_771695ba_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FinalStatCardComponent.vue?vue&type=template&id=771695ba&scoped=true& */ "./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&scoped=true&");
+/* harmony import */ var _FinalStatCardComponent_vue_vue_type_template_id_771695ba___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FinalStatCardComponent.vue?vue&type=template&id=771695ba& */ "./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&");
 /* harmony import */ var _FinalStatCardComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FinalStatCardComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=script&lang=js&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
@@ -22877,11 +22906,11 @@ __webpack_require__.r(__webpack_exports__);
 ;
 var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
   _FinalStatCardComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _FinalStatCardComponent_vue_vue_type_template_id_771695ba_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render,
-  _FinalStatCardComponent_vue_vue_type_template_id_771695ba_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  _FinalStatCardComponent_vue_vue_type_template_id_771695ba___WEBPACK_IMPORTED_MODULE_0__.render,
+  _FinalStatCardComponent_vue_vue_type_template_id_771695ba___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
   false,
   null,
-  "771695ba",
+  null,
   null
   
 )
@@ -23508,19 +23537,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&scoped=true&":
-/*!*************************************************************************************************************!*\
-  !*** ./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&scoped=true& ***!
-  \*************************************************************************************************************/
+/***/ "./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&":
+/*!*************************************************************************************************!*\
+  !*** ./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba& ***!
+  \*************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FinalStatCardComponent_vue_vue_type_template_id_771695ba_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FinalStatCardComponent_vue_vue_type_template_id_771695ba_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FinalStatCardComponent_vue_vue_type_template_id_771695ba___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FinalStatCardComponent_vue_vue_type_template_id_771695ba___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FinalStatCardComponent_vue_vue_type_template_id_771695ba_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./FinalStatCardComponent.vue?vue&type=template&id=771695ba&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&scoped=true&");
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FinalStatCardComponent_vue_vue_type_template_id_771695ba___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./FinalStatCardComponent.vue?vue&type=template&id=771695ba& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&");
 
 
 /***/ }),
@@ -24220,10 +24249,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&scoped=true&":
-/*!****************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&scoped=true& ***!
-  \****************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba&":
+/*!****************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/Cards/FinalStatCardComponent.vue?vue&type=template&id=771695ba& ***!
+  \****************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -24244,6 +24273,18 @@ var render = function () {
           attrs: { width: _vm.$vuetify.breakpoint.xs ? "100%" : "550" },
         },
         [
+          _c("SnackBar", {
+            attrs: {
+              visible: _vm.showSnackBar,
+              message: "Stats updated successfully",
+            },
+            on: {
+              close: function ($event) {
+                _vm.showSnackBar = false
+              },
+            },
+          }),
+          _vm._v(" "),
           _c(
             "v-container",
             [
@@ -24261,11 +24302,7 @@ var render = function () {
                           _c("v-text-field", {
                             staticClass: "caption",
                             attrs: { dense: "", label: "Min MMR" },
-                            on: {
-                              input: function ($event) {
-                                return _vm.checkLength(_vm.minSeasonMmr)
-                              },
-                            },
+                            on: { input: _vm.inputUpdated },
                             model: {
                               value: _vm.minSeasonMmr,
                               callback: function ($$v) {
@@ -24285,11 +24322,7 @@ var render = function () {
                           _c("v-text-field", {
                             staticClass: "caption",
                             attrs: { dense: "", label: "Max MMR" },
-                            on: {
-                              input: function ($event) {
-                                return _vm.checkLength(_vm.maxSeasonMmr)
-                              },
-                            },
+                            on: { input: _vm.inputUpdated },
                             model: {
                               value: _vm.maxSeasonMmr,
                               callback: function ($$v) {
@@ -24309,11 +24342,7 @@ var render = function () {
                           _c("v-text-field", {
                             staticClass: "caption",
                             attrs: { dense: "", label: "Final MMR" },
-                            on: {
-                              input: function ($event) {
-                                return _vm.checkLength(_vm.finalSeasonMmr)
-                              },
-                            },
+                            on: { input: _vm.inputUpdated },
                             model: {
                               value: _vm.finalSeasonMmr,
                               callback: function ($$v) {
@@ -24511,6 +24540,24 @@ var render = function () {
                 ],
                 1
               ),
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "d-flex justify-end mr-2 mb-2" },
+            [
+              _vm.showButton
+                ? _c(
+                    "v-btn",
+                    {
+                      attrs: { "x-small": "", color: "success" },
+                      on: { click: _vm.updateFinalStartCard },
+                    },
+                    [_vm._v("Update")]
+                  )
+                : _vm._e(),
             ],
             1
           ),
@@ -26466,7 +26513,7 @@ var render = function () {
       _c(
         "v-snackbar",
         {
-          attrs: { top: "", color: "success" },
+          attrs: { top: "", outlined: "", color: "success" },
           scopedSlots: _vm._u([
             {
               key: "action",
@@ -26502,7 +26549,7 @@ var render = function () {
             expression: "show",
           },
         },
-        [_vm._v("\n        " + _vm._s(_vm.text) + "\n        ")]
+        [_vm._v("\n        " + _vm._s(_vm.messageText) + "\n        ")]
       ),
     ],
     1

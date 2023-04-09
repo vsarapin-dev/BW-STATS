@@ -16,7 +16,7 @@ class Service
 {
     public function importFile($excel_file, $season_number)
     {
-        $data = $this->addSeasonColumnWithData($excel_file);
+        $data = $this->addSeasonColumnToData($excel_file);
         $season_id = Season::where('season_number', $season_number)->first()->id;
         $this->insertIntoDB($data, $season_id);
 
@@ -59,9 +59,15 @@ class Service
                 'is_smurf' => $isSmurf,
             ]);
         }
+        $this->updateGeneralizedStats();
     }
 
-    private function addSeasonColumnWithData($excel_file): array
+    private function updateGeneralizedStats()
+    {
+
+    }
+
+    private function addSeasonColumnToData($excel_file): array
     {
         $spreadsheet = IOFactory::load($excel_file);
 

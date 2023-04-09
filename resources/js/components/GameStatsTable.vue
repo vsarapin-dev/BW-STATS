@@ -261,7 +261,7 @@ export default {
                         this.computeWinPercents(this.totals);
                     }
                     this.loadingData = false;
-                    console.log(this.bestDataResults)
+                    console.log(res.data)
                 })
                 .catch(e => {
                     this.loadingData = false;

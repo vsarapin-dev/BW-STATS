@@ -2,10 +2,11 @@
     <div class="text-center ma-2">
         <v-snackbar
             top
+            outlined
             color="success"
             v-model="show"
         >
-            {{ text }}
+            {{ messageText }}
             <template v-slot:action="{ attrs }">
                 <v-btn
                     color="white"
@@ -23,13 +24,20 @@
 <script>
 export default {
     name: "SnackBar",
-    props: ['visible'],
-    data() {
-        return {
-            text: `Saved successfully`,
-        }
-    },
+    props: ['visible', 'message'],
     computed: {
+        messageText: {
+            get() {
+                if (this.message.length === 0)
+                {
+                    return 'Saved successfully';
+                }
+                return this.message;
+            },
+            set(value) {
+                this.message = value;
+            },
+        },
         show: {
             get() {
                 return this.visible
