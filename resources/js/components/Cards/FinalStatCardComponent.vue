@@ -5,7 +5,7 @@
         <v-container>
             <v-row>
                 <v-col xs="12">
-                    <v-card-text class="pt-3 pb-0">
+                    <v-card-text class="pt-0 pb-0">
                         <v-text-field
                             v-model="minSeasonMmr"
                             @input="inputUpdated"
@@ -15,7 +15,7 @@
                         >
                         </v-text-field>
                     </v-card-text>
-                    <v-card-text class="pt-3 pb-0">
+                    <v-card-text class="pt-0 pb-0">
                         <v-text-field
                             v-model="maxSeasonMmr"
                             @input="inputUpdated"
@@ -25,7 +25,7 @@
                         >
                         </v-text-field>
                     </v-card-text>
-                    <v-card-text class="pt-3 pb-0">
+                    <v-card-text class="pt-0 pb-0">
                         <v-text-field
                             v-model="finalSeasonMmr"
                             @input="inputUpdated"
@@ -38,27 +38,63 @@
                 </v-col>
                 <v-divider vertical class="mt-2 mb-2"></v-divider>
                 <v-col xs="12">
-                    <v-card-text class="pt-3 pb-0">
-                        <v-text-field
-                            v-model="seasonStarted"
-                            @input="inputUpdated"
-                            dense
-                            class="caption"
-                            label="Season started"
+                    <v-card-text class="pt-0 pb-0">
+                        <v-menu
+                            ref="menuSeasonStarted"
+                            v-model="menuSeasonStarted"
+                            :close-on-content-click="false"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="290px"
+                            min-width="auto"
                         >
-                        </v-text-field>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                    v-model="computedDateOfStartSeasonFormatted"
+                                    label="Season started"
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    class="caption"
+                                    readonly
+                                    dense
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                v-model="dateSeasonStarted"
+                                no-title
+                                @input="inputUpdated"
+                            ></v-date-picker>
+                        </v-menu>
                     </v-card-text>
-                    <v-card-text class="pt-3 pb-0">
-                        <v-text-field
-                            v-model="seasonEnded"
-                            @input="inputUpdated"
-                            dense
-                            class="caption"
-                            label="Season ended"
+                    <v-card-text class="pt-0 pb-0">
+                        <v-menu
+                            ref="menuSeasonStarted"
+                            v-model="menuSeasonEnded"
+                            :close-on-content-click="false"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="290px"
+                            min-width="auto"
                         >
-                        </v-text-field>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                    v-model="computedDateOfEndSeasonFormatted"
+                                    label="Season ended"
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    class="caption"
+                                    readonly
+                                    dense
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                v-model="dateSeasonEnded"
+                                no-title
+                                @input="inputUpdated"
+                            ></v-date-picker>
+                        </v-menu>
                     </v-card-text>
-                    <v-card-text class="pt-3 pb-0">
+                    <v-card-text class="pt-0 pb-0">
                         <v-text-field
                             v-model="placementMatches"
                             @input="inputUpdated"
@@ -71,7 +107,7 @@
                 </v-col>
                 <v-divider vertical class="mt-2 mb-2"></v-divider>
                 <v-col xs="12">
-                    <v-card-text class="pt-3 pb-0">
+                    <v-card-text class="pt-0 pb-0">
                         <v-text-field
                             disabled
                             v-model="smurfPercent"
@@ -81,7 +117,7 @@
                         >
                         </v-text-field>
                     </v-card-text>
-                    <v-card-text class="pt-3 pb-0">
+                    <v-card-text class="pt-0 pb-0">
                         <v-text-field
                             disabled
                             v-model="woPercent"
@@ -94,7 +130,7 @@
                 </v-col>
                 <v-divider vertical class="mt-2 mb-2"></v-divider>
                 <v-col xs="12">
-                    <v-card-text class="pt-3 pb-0 caption">
+                    <v-card-text class="pt-0 pb-0 caption">
                         <v-text-field
                             disabled
                             v-model="winStreak"
@@ -104,7 +140,7 @@
                         >
                         </v-text-field>
                     </v-card-text>
-                    <v-card-text class="pt-3 pb-0 caption">
+                    <v-card-text class="pt-0 pb-0 caption">
                         <v-text-field
                             disabled
                             v-model="loseStreak"
@@ -129,9 +165,13 @@ import SnackBar from "../SnackBar";
 
 export default {
     name: "FinalStatCardComponent",
-    props: ['finalResults'],
+    props: ['finalResults', 'selectedSeason'],
     data() {
         return {
+            dateSeasonStarted: null,
+            dateSeasonEnded: null,
+            menuSeasonStarted: false,
+            menuSeasonEnded: false,
             showSnackBar: false,
             showButton: false,
             minSeasonMmr: null,
@@ -142,7 +182,6 @@ export default {
             placementMatches: null,
             smurfPercent: null,
             woPercent: null,
-            seasonStarted: null,
             seasonEnded: null,
         }
     },
@@ -157,25 +196,53 @@ export default {
             this.loseStreak = value?.maxStreaks?.maxWins;
         },
     },
+    computed: {
+        computedDateOfStartSeasonFormatted () {
+            return this.formatDate(this.dateSeasonStarted)
+        },
+        computedDateOfEndSeasonFormatted () {
+            return this.formatDate(this.dateSeasonEnded)
+        },
+    },
     methods: {
+        formatDate(date) {
+            if (!date) return null
+
+            const [year, month, day] = date.split('-')
+            return `${day}-${month}-${year}`
+        },
+        parseDate(date) {
+            if (!date) return null
+
+            const [day, month, year] = date.split('-')
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+        },
         inputUpdated() {
+            this.menuSeasonEnded = false;
+            this.menuSeasonStarted = false;
             this.showButton = true;
         },
         updateFinalStartCard() {
             this.showButton = false;
-            API.post('/api/auth/result-cards/update', {
-                'minSeasonMmr': this.minSeasonMmr,
-                'maxSeasonMmr': this.maxSeasonMmr,
-                'finalSeasonMmr': this.finalSeasonMmr,
-                'placementMatches': this.placementMatches,
-                'seasonStarted': this.seasonStarted,
-                'seasonEnded': this.seasonEnded,
-            })
+            let dataToSend = {
+                'season_id': this.selectedSeason,
+                'min_season_mmr': this.minSeasonMmr,
+                'max_season_mmr': this.maxSeasonMmr,
+                'final_season_mmr': this.finalSeasonMmr,
+                'placement_matches': this.placementMatches,
+                'season_started': this.parseDate(this.formatDate(this.dateSeasonStarted)),
+                'season_ended': this.parseDate(this.formatDate(this.dateSeasonEnded)),
+            };
+            dataToSend = Object.fromEntries(Object.entries(dataToSend).filter(([_, v]) => v != null))
+
+            console.log(dataToSend)
+
+            API.post('/api/auth/total-values/update', dataToSend)
             .then(res => {
-                this.showSnackBar = true
+                console.log(res.data)
             })
             .catch(e => {
-                console.log(e);
+                console.log(e.response);
             })
         },
     }

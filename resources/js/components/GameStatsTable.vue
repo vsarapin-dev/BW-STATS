@@ -21,6 +21,7 @@
                 :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
             <FinalStatCardComponent
                 :finalResults="bestDataResults"
+                :selectedSeason="selectedSeason"
                 :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-5'"/>
         </v-row>
         <v-data-table

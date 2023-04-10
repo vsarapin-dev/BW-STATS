@@ -9,6 +9,7 @@ use App\Models\Map;
 use App\Models\Race;
 use App\Models\Result;
 use App\Models\Season;
+use GeneralizedStats;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -59,12 +60,7 @@ class Service
                 'is_smurf' => $isSmurf,
             ]);
         }
-        $this->updateGeneralizedStats();
-    }
-
-    private function updateGeneralizedStats()
-    {
-
+        GeneralizedStats::setAllBestStats($season_id);
     }
 
     private function addSeasonColumnToData($excel_file): array

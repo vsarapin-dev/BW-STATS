@@ -28,7 +28,7 @@ export default {
     computed: {
         messageText: {
             get() {
-                if (this.message.length === 0)
+                if (!this.message || this.message.length === 0)
                 {
                     return 'Saved successfully';
                 }

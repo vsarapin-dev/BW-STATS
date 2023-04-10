@@ -2604,6 +2604,48 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../api */ "./resources/js/api.js");
 /* harmony import */ var _SnackBar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../SnackBar */ "./resources/js/components/SnackBar.vue");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2734,9 +2776,13 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "FinalStatCardComponent",
-  props: ['finalResults'],
+  props: ['finalResults', 'selectedSeason'],
   data: function data() {
     return {
+      dateSeasonStarted: null,
+      dateSeasonEnded: null,
+      menuSeasonStarted: false,
+      menuSeasonEnded: false,
       showSnackBar: false,
       showButton: false,
       minSeasonMmr: null,
@@ -2747,7 +2793,6 @@ __webpack_require__.r(__webpack_exports__);
       placementMatches: null,
       smurfPercent: null,
       woPercent: null,
-      seasonStarted: null,
       seasonEnded: null
     };
   },
@@ -2763,24 +2808,60 @@ __webpack_require__.r(__webpack_exports__);
       this.loseStreak = value === null || value === void 0 ? void 0 : (_value$maxStreaks2 = value.maxStreaks) === null || _value$maxStreaks2 === void 0 ? void 0 : _value$maxStreaks2.maxWins;
     }
   },
+  computed: {
+    computedDateOfStartSeasonFormatted: function computedDateOfStartSeasonFormatted() {
+      return this.formatDate(this.dateSeasonStarted);
+    },
+    computedDateOfEndSeasonFormatted: function computedDateOfEndSeasonFormatted() {
+      return this.formatDate(this.dateSeasonEnded);
+    }
+  },
   methods: {
+    formatDate: function formatDate(date) {
+      if (!date) return null;
+      var _date$split = date.split('-'),
+        _date$split2 = _slicedToArray(_date$split, 3),
+        year = _date$split2[0],
+        month = _date$split2[1],
+        day = _date$split2[2];
+      return "".concat(day, "-").concat(month, "-").concat(year);
+    },
+    parseDate: function parseDate(date) {
+      if (!date) return null;
+      var _date$split3 = date.split('-'),
+        _date$split4 = _slicedToArray(_date$split3, 3),
+        day = _date$split4[0],
+        month = _date$split4[1],
+        year = _date$split4[2];
+      return "".concat(year, "-").concat(month.padStart(2, '0'), "-").concat(day.padStart(2, '0'));
+    },
     inputUpdated: function inputUpdated() {
+      this.menuSeasonEnded = false;
+      this.menuSeasonStarted = false;
       this.showButton = true;
     },
     updateFinalStartCard: function updateFinalStartCard() {
-      var _this = this;
       this.showButton = false;
-      _api__WEBPACK_IMPORTED_MODULE_0__["default"].post('/api/auth/result-cards/update', {
-        'minSeasonMmr': this.minSeasonMmr,
-        'maxSeasonMmr': this.maxSeasonMmr,
-        'finalSeasonMmr': this.finalSeasonMmr,
-        'placementMatches': this.placementMatches,
-        'seasonStarted': this.seasonStarted,
-        'seasonEnded': this.seasonEnded
-      }).then(function (res) {
-        _this.showSnackBar = true;
+      var dataToSend = {
+        'season_id': this.selectedSeason,
+        'min_season_mmr': this.minSeasonMmr,
+        'max_season_mmr': this.maxSeasonMmr,
+        'final_season_mmr': this.finalSeasonMmr,
+        'placement_matches': this.placementMatches,
+        'season_started': this.parseDate(this.formatDate(this.dateSeasonStarted)),
+        'season_ended': this.parseDate(this.formatDate(this.dateSeasonEnded))
+      };
+      dataToSend = Object.fromEntries(Object.entries(dataToSend).filter(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+          _ = _ref2[0],
+          v = _ref2[1];
+        return v != null;
+      }));
+      console.log(dataToSend);
+      _api__WEBPACK_IMPORTED_MODULE_0__["default"].post('/api/auth/total-values/update', dataToSend).then(function (res) {
+        console.log(res.data);
       })["catch"](function (e) {
-        console.log(e);
+        console.log(e.response);
       });
     }
   }
@@ -3860,6 +3941,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 //
 //
 //
+//
 
 
 
@@ -4243,7 +4325,7 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     messageText: {
       get: function get() {
-        if (this.message.length === 0) {
+        if (!this.message || this.message.length === 0) {
           return 'Saved successfully';
         }
         return this.message;
@@ -24297,7 +24379,7 @@ var render = function () {
                     [
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0" },
+                        { staticClass: "pt-0 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
@@ -24317,7 +24399,7 @@ var render = function () {
                       _vm._v(" "),
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0" },
+                        { staticClass: "pt-0 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
@@ -24337,7 +24419,7 @@ var render = function () {
                       _vm._v(" "),
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0" },
+                        { staticClass: "pt-0 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
@@ -24369,47 +24451,183 @@ var render = function () {
                     [
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0" },
+                        { staticClass: "pt-0 pb-0" },
                         [
-                          _c("v-text-field", {
-                            staticClass: "caption",
-                            attrs: { dense: "", label: "Season started" },
-                            on: { input: _vm.inputUpdated },
-                            model: {
-                              value: _vm.seasonStarted,
-                              callback: function ($$v) {
-                                _vm.seasonStarted = $$v
+                          _c(
+                            "v-menu",
+                            {
+                              ref: "menuSeasonStarted",
+                              attrs: {
+                                "close-on-content-click": false,
+                                transition: "scale-transition",
+                                "offset-y": "",
+                                "max-width": "290px",
+                                "min-width": "auto",
                               },
-                              expression: "seasonStarted",
+                              scopedSlots: _vm._u(
+                                [
+                                  {
+                                    key: "activator",
+                                    fn: function (ref) {
+                                      var on = ref.on
+                                      var attrs = ref.attrs
+                                      return [
+                                        _c(
+                                          "v-text-field",
+                                          _vm._g(
+                                            _vm._b(
+                                              {
+                                                staticClass: "caption",
+                                                attrs: {
+                                                  label: "Season started",
+                                                  readonly: "",
+                                                  dense: "",
+                                                },
+                                                model: {
+                                                  value:
+                                                    _vm.computedDateOfStartSeasonFormatted,
+                                                  callback: function ($$v) {
+                                                    _vm.computedDateOfStartSeasonFormatted =
+                                                      $$v
+                                                  },
+                                                  expression:
+                                                    "computedDateOfStartSeasonFormatted",
+                                                },
+                                              },
+                                              "v-text-field",
+                                              attrs,
+                                              false
+                                            ),
+                                            on
+                                          )
+                                        ),
+                                      ]
+                                    },
+                                  },
+                                ],
+                                null,
+                                false,
+                                3739405339
+                              ),
+                              model: {
+                                value: _vm.menuSeasonStarted,
+                                callback: function ($$v) {
+                                  _vm.menuSeasonStarted = $$v
+                                },
+                                expression: "menuSeasonStarted",
+                              },
                             },
-                          }),
+                            [
+                              _vm._v(" "),
+                              _c("v-date-picker", {
+                                attrs: { "no-title": "" },
+                                on: { input: _vm.inputUpdated },
+                                model: {
+                                  value: _vm.dateSeasonStarted,
+                                  callback: function ($$v) {
+                                    _vm.dateSeasonStarted = $$v
+                                  },
+                                  expression: "dateSeasonStarted",
+                                },
+                              }),
+                            ],
+                            1
+                          ),
                         ],
                         1
                       ),
                       _vm._v(" "),
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0" },
+                        { staticClass: "pt-0 pb-0" },
                         [
-                          _c("v-text-field", {
-                            staticClass: "caption",
-                            attrs: { dense: "", label: "Season ended" },
-                            on: { input: _vm.inputUpdated },
-                            model: {
-                              value: _vm.seasonEnded,
-                              callback: function ($$v) {
-                                _vm.seasonEnded = $$v
+                          _c(
+                            "v-menu",
+                            {
+                              ref: "menuSeasonStarted",
+                              attrs: {
+                                "close-on-content-click": false,
+                                transition: "scale-transition",
+                                "offset-y": "",
+                                "max-width": "290px",
+                                "min-width": "auto",
                               },
-                              expression: "seasonEnded",
+                              scopedSlots: _vm._u(
+                                [
+                                  {
+                                    key: "activator",
+                                    fn: function (ref) {
+                                      var on = ref.on
+                                      var attrs = ref.attrs
+                                      return [
+                                        _c(
+                                          "v-text-field",
+                                          _vm._g(
+                                            _vm._b(
+                                              {
+                                                staticClass: "caption",
+                                                attrs: {
+                                                  label: "Season ended",
+                                                  readonly: "",
+                                                  dense: "",
+                                                },
+                                                model: {
+                                                  value:
+                                                    _vm.computedDateOfEndSeasonFormatted,
+                                                  callback: function ($$v) {
+                                                    _vm.computedDateOfEndSeasonFormatted =
+                                                      $$v
+                                                  },
+                                                  expression:
+                                                    "computedDateOfEndSeasonFormatted",
+                                                },
+                                              },
+                                              "v-text-field",
+                                              attrs,
+                                              false
+                                            ),
+                                            on
+                                          )
+                                        ),
+                                      ]
+                                    },
+                                  },
+                                ],
+                                null,
+                                false,
+                                3506386555
+                              ),
+                              model: {
+                                value: _vm.menuSeasonEnded,
+                                callback: function ($$v) {
+                                  _vm.menuSeasonEnded = $$v
+                                },
+                                expression: "menuSeasonEnded",
+                              },
                             },
-                          }),
+                            [
+                              _vm._v(" "),
+                              _c("v-date-picker", {
+                                attrs: { "no-title": "" },
+                                on: { input: _vm.inputUpdated },
+                                model: {
+                                  value: _vm.dateSeasonEnded,
+                                  callback: function ($$v) {
+                                    _vm.dateSeasonEnded = $$v
+                                  },
+                                  expression: "dateSeasonEnded",
+                                },
+                              }),
+                            ],
+                            1
+                          ),
                         ],
                         1
                       ),
                       _vm._v(" "),
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0" },
+                        { staticClass: "pt-0 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
@@ -24441,7 +24659,7 @@ var render = function () {
                     [
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0" },
+                        { staticClass: "pt-0 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
@@ -24460,7 +24678,7 @@ var render = function () {
                       _vm._v(" "),
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0" },
+                        { staticClass: "pt-0 pb-0" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
@@ -24491,7 +24709,7 @@ var render = function () {
                     [
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0 caption" },
+                        { staticClass: "pt-0 pb-0 caption" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
@@ -24514,7 +24732,7 @@ var render = function () {
                       _vm._v(" "),
                       _c(
                         "v-card-text",
-                        { staticClass: "pt-3 pb-0 caption" },
+                        { staticClass: "pt-0 pb-0 caption" },
                         [
                           _c("v-text-field", {
                             staticClass: "caption",
@@ -26075,7 +26293,10 @@ var render = function () {
           _vm._v(" "),
           _c("FinalStatCardComponent", {
             class: _vm.$vuetify.breakpoint.smAndUp ? ["ml-2", "mr-2"] : "ml-5",
-            attrs: { finalResults: _vm.bestDataResults },
+            attrs: {
+              finalResults: _vm.bestDataResults,
+              selectedSeason: _vm.selectedSeason,
+            },
           }),
         ],
         1

@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\GameStat;
-use App\Observers\GameStatObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -28,6 +26,5 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot() : void
     {
-        GameStat::observe(GameStatObserver::class);
     }
 }

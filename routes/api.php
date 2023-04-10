@@ -38,14 +38,18 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
         });
 
         Route::group(['namespace' => 'Season', 'prefix' => 'seasons'], function () {
-            Route::post('/', 'IndexController')->name('get-seasons');
+            Route::post('/', 'IndexController')->name('get.seasons');
+        });
+
+        Route::group(['namespace' => 'TotalValues', 'prefix' => 'total-values'], function () {
+            Route::post('/update', 'StoreController')->name('totals.update');
         });
 
         Route::group(['namespace' => 'filters', 'prefix' => 'filters'], function () {
-            Route::post('/results', 'ResultsController')->name('get-results-list');
-            Route::post('/maps', 'MapsController')->name('get-maps-list');
-            Route::post('/races', 'RacesController')->name('get-races-list');
-            Route::post('/find-logins', 'NicknameLoginController')->name('get-login');
+            Route::post('/results', 'ResultsController')->name('get.results.list');
+            Route::post('/maps', 'MapsController')->name('get.maps.list');
+            Route::post('/races', 'RacesController')->name('get.races.list');
+            Route::post('/find-logins', 'NicknameLoginController')->name('get.login');
         });
     });
 });
