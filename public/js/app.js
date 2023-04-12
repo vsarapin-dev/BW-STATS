@@ -2561,12 +2561,12 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "BestStatCardComponent",
-  props: ['bestDataResults'],
+  props: ['finalSeasonDataResults'],
   computed: {
     allResults: function allResults() {
       var _this = this;
-      if (!this.bestDataResults) return;
-      return this.bestDataResults.map(function (i) {
+      if (!this.finalSeasonDataResults) return;
+      return this.finalSeasonDataResults.map(function (i) {
         var parsedWinPercentage = parseFloat(i.win_percentage);
         return _objectSpread(_objectSpread({}, i), {}, {
           win_percentage: parsedWinPercentage.toFixed(2),
@@ -2771,6 +2771,16 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2779,6 +2789,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   props: ['finalResults', 'selectedSeason'],
   data: function data() {
     return {
+      message: '',
       dateSeasonStarted: null,
       dateSeasonEnded: null,
       menuSeasonStarted: false,
@@ -2793,6 +2804,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       placementMatches: null,
       smurfPercent: null,
       woPercent: null,
+      randomPercent: null,
       seasonEnded: null
     };
   },
@@ -2801,11 +2813,20 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   },
   watch: {
     finalResults: function finalResults(value) {
-      var _value$percents, _value$percents2, _value$maxStreaks, _value$maxStreaks2;
-      this.woPercent = (value === null || value === void 0 ? void 0 : (_value$percents = value.percents) === null || _value$percents === void 0 ? void 0 : _value$percents.woPercent) + '%';
-      this.smurfPercent = (value === null || value === void 0 ? void 0 : (_value$percents2 = value.percents) === null || _value$percents2 === void 0 ? void 0 : _value$percents2.smurfPercent) + '%';
-      this.winStreak = value === null || value === void 0 ? void 0 : (_value$maxStreaks = value.maxStreaks) === null || _value$maxStreaks === void 0 ? void 0 : _value$maxStreaks.maxDefeats;
-      this.loseStreak = value === null || value === void 0 ? void 0 : (_value$maxStreaks2 = value.maxStreaks) === null || _value$maxStreaks2 === void 0 ? void 0 : _value$maxStreaks2.maxWins;
+      if (value.hasOwnProperty('percents') || value.hasOwnProperty('maxStreaks') || value.hasOwnProperty('editableFields')) {
+        var _value$percents, _value$percents2, _value$percents3, _value$maxStreaks, _value$maxStreaks2, _value$editableFields, _value$editableFields2, _value$editableFields3, _value$editableFields4, _value$editableFields5, _value$editableFields6;
+        this.woPercent = (value === null || value === void 0 ? void 0 : (_value$percents = value.percents) === null || _value$percents === void 0 ? void 0 : _value$percents.woPercent) + '%';
+        this.smurfPercent = (value === null || value === void 0 ? void 0 : (_value$percents2 = value.percents) === null || _value$percents2 === void 0 ? void 0 : _value$percents2.smurfPercent) + '%';
+        this.randomPercent = (value === null || value === void 0 ? void 0 : (_value$percents3 = value.percents) === null || _value$percents3 === void 0 ? void 0 : _value$percents3.randomPercent) + '%';
+        this.winStreak = value === null || value === void 0 ? void 0 : (_value$maxStreaks = value.maxStreaks) === null || _value$maxStreaks === void 0 ? void 0 : _value$maxStreaks.maxDefeats;
+        this.loseStreak = value === null || value === void 0 ? void 0 : (_value$maxStreaks2 = value.maxStreaks) === null || _value$maxStreaks2 === void 0 ? void 0 : _value$maxStreaks2.maxWins;
+        this.minSeasonMmr = value === null || value === void 0 ? void 0 : (_value$editableFields = value.editableFields) === null || _value$editableFields === void 0 ? void 0 : _value$editableFields.minSeasonMmr;
+        this.maxSeasonMmr = value === null || value === void 0 ? void 0 : (_value$editableFields2 = value.editableFields) === null || _value$editableFields2 === void 0 ? void 0 : _value$editableFields2.maxSeasonMmr;
+        this.finalSeasonMmr = value === null || value === void 0 ? void 0 : (_value$editableFields3 = value.editableFields) === null || _value$editableFields3 === void 0 ? void 0 : _value$editableFields3.finalSeasonMmr;
+        this.placementMatches = value === null || value === void 0 ? void 0 : (_value$editableFields4 = value.editableFields) === null || _value$editableFields4 === void 0 ? void 0 : _value$editableFields4.placementMatches;
+        this.dateSeasonStarted = value === null || value === void 0 ? void 0 : (_value$editableFields5 = value.editableFields) === null || _value$editableFields5 === void 0 ? void 0 : _value$editableFields5.seasonStarted;
+        this.dateSeasonEnded = value === null || value === void 0 ? void 0 : (_value$editableFields6 = value.editableFields) === null || _value$editableFields6 === void 0 ? void 0 : _value$editableFields6.seasonEnded;
+      }
     }
   },
   computed: {
@@ -2841,8 +2862,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.showButton = true;
     },
     updateFinalStartCard: function updateFinalStartCard() {
+      var _this = this;
       this.showButton = false;
-      var dataToSend = {
+      _api__WEBPACK_IMPORTED_MODULE_0__["default"].post('/api/auth/total-values/update', {
         'season_id': this.selectedSeason,
         'min_season_mmr': this.minSeasonMmr,
         'max_season_mmr': this.maxSeasonMmr,
@@ -2850,15 +2872,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         'placement_matches': this.placementMatches,
         'season_started': this.parseDate(this.formatDate(this.dateSeasonStarted)),
         'season_ended': this.parseDate(this.formatDate(this.dateSeasonEnded))
-      };
-      dataToSend = Object.fromEntries(Object.entries(dataToSend).filter(function (_ref) {
-        var _ref2 = _slicedToArray(_ref, 2),
-          _ = _ref2[0],
-          v = _ref2[1];
-        return v != null;
-      }));
-      console.log(dataToSend);
-      _api__WEBPACK_IMPORTED_MODULE_0__["default"].post('/api/auth/total-values/update', dataToSend).then(function (res) {
+      }).then(function (res) {
+        _this.message = res.data.message;
+        _this.showSnackBar = true;
         console.log(res.data);
       })["catch"](function (e) {
         console.log(e.response);
@@ -2949,13 +2965,110 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "TotalStatCardComponent",
-  props: ['totals'],
+  props: ['generalStats'],
   watch: {
-    totals: function totals(value) {
-      this.totals = value;
+    generalStats: function generalStats(value) {
+      this.generalStats = value;
+    }
+  },
+  methods: {
+    getTextColor: function getTextColor(value) {
+      switch (true) {
+        case value <= 45:
+          return 'red';
+        case value > 45 && value < 55:
+          return '#a98600';
+        case value >= 55:
+          return 'green';
+      }
     }
   }
 });
@@ -3970,21 +4083,11 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
       isOpenedCreateNewDialog: false,
       isOpenedFilterDialog: false,
       seasons: [],
-      bestDataResults: [],
+      bestMaps: [],
       selectedSeason: null,
       lastUpdatedAtDate: null,
       selectedToDelete: [],
-      totals: {
-        raw: {
-          total_games: 0,
-          real_wins: 0,
-          general_wins: 0
-        },
-        percents: {
-          real_wins: 0,
-          general_wins: 0
-        }
-      },
+      generalStats: null,
       headers: [{
         text: 'Game #',
         value: 'game_number',
@@ -4073,15 +4176,14 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
         season_id: this.selectedSeason
       }).then(function (res) {
         _this2.resetVariables();
-        if (res.data.hasOwnProperty('data') && res.data.hasOwnProperty('gameStatTotalValueResult') && res.data.hasOwnProperty('currentSeason') && res.data.hasOwnProperty('availableSeasons') && res.data.hasOwnProperty('lastUpdated') && res.data.hasOwnProperty('bestDataResults') && res.data.data !== null && res.data.gameStatTotalValueResult !== null && res.data.availableSeasons !== null && res.data.currentSeason !== null && res.data.lastUpdated !== null && res.data.bestDataResults !== null) {
-          _this2.bestDataResults = res.data.bestDataResults;
+        if (res.data.hasOwnProperty('data') && res.data.hasOwnProperty('generalStats') && res.data.hasOwnProperty('currentSeason') && res.data.hasOwnProperty('availableSeasons') && res.data.hasOwnProperty('lastUpdated') && res.data.hasOwnProperty('bestMaps') && res.data.data !== null && res.data.generalStats !== null && res.data.availableSeasons !== null && res.data.currentSeason !== null && res.data.lastUpdated !== null && res.data.bestMaps !== null) {
+          _this2.bestMaps = res.data.bestMaps;
           _this2.lastUpdatedAtDate = res.data.lastUpdated;
           _this2.stats = res.data.data.data;
-          _this2.totals.raw = res.data.gameStatTotalValueResult;
+          _this2.generalStats = res.data.generalStats;
           _this2.seasons = res.data.availableSeasons;
           _this2.selectedSeason = res.data.currentSeason.id;
           _this2.setPageVariables(res.data.data);
-          _this2.computeWinPercents(_this2.totals);
         }
         _this2.loadingData = false;
         console.log(res.data);
@@ -4114,37 +4216,12 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
       this.pageCount = meta.last_page;
     },
     resetVariables: function resetVariables() {
-      this.resetTotals();
-      this.bestDataResults = [];
+      this.generalStats = null;
+      this.bestMaps = [];
       this.lastUpdatedAtDate = null;
       this.stats = [];
       this.page = 0;
       this.pageCount = 0;
-    },
-    resetTotals: function resetTotals() {
-      this.totals = {
-        raw: {
-          total_games: 0,
-          real_wins: 0,
-          general_wins: 0
-        },
-        percents: {
-          real_wins: 0,
-          general_wins: 0
-        }
-      };
-    },
-    computeWinPercents: function computeWinPercents(totals) {
-      if (totals.raw.total_games > 0 && totals.raw.real_wins > 0 && totals.raw.general_wins > 0) {
-        totals.percents.real_wins = totals.raw.real_wins / totals.raw.total_games * 100;
-        totals.percents.general_wins = totals.raw.general_wins / totals.raw.total_games * 100;
-        if (totals.percents.real_wins % 1 !== 0) {
-          totals.percents.real_wins = totals.percents.real_wins.toFixed(2);
-        }
-        if (totals.percents.general_wins % 1 !== 0) {
-          totals.percents.general_wins = totals.percents.general_wins.toFixed(2);
-        }
-      }
     }
   }
 });
@@ -24228,7 +24305,7 @@ var render = function () {
                             { staticClass: "text-truncate" },
                             [
                               _c("span", { staticClass: "caption" }, [
-                                _vm._v(_vm._s(dataResult.name)),
+                                _vm._v(_vm._s(dataResult.map_name)),
                               ]),
                               _vm._v(" "),
                               _vm.allResults.length - 1 > index
@@ -24245,7 +24322,7 @@ var render = function () {
                   ),
                   _vm._v(" "),
                   _c("v-divider", {
-                    staticClass: "mt-2 mb-2",
+                    staticClass: "mt-4 mb-4",
                     attrs: { vertical: "" },
                   }),
                   _vm._v(" "),
@@ -24277,7 +24354,7 @@ var render = function () {
                   ),
                   _vm._v(" "),
                   _c("v-divider", {
-                    staticClass: "mt-2 mb-2",
+                    staticClass: "mt-4 mb-4",
                     attrs: { vertical: "" },
                   }),
                   _vm._v(" "),
@@ -24356,10 +24433,7 @@ var render = function () {
         },
         [
           _c("SnackBar", {
-            attrs: {
-              visible: _vm.showSnackBar,
-              message: "Stats updated successfully",
-            },
+            attrs: { visible: _vm.showSnackBar, message: _vm.message },
             on: {
               close: function ($event) {
                 _vm.showSnackBar = false
@@ -24694,6 +24768,29 @@ var render = function () {
                         ],
                         1
                       ),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-text",
+                        { staticClass: "pt-0 pb-0" },
+                        [
+                          _c("v-text-field", {
+                            staticClass: "caption",
+                            attrs: {
+                              disabled: "",
+                              dense: "",
+                              label: "Random %",
+                            },
+                            model: {
+                              value: _vm.randomPercent,
+                              callback: function ($$v) {
+                                _vm.randomPercent = $$v
+                              },
+                              expression: "randomPercent",
+                            },
+                          }),
+                        ],
+                        1
+                      ),
                     ],
                     1
                   ),
@@ -24807,69 +24904,125 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm.totals.raw.total_games > 0
+  return _vm.generalStats
     ? _c(
         "v-card",
         {
           staticClass: "mt-10",
-          attrs: { width: _vm.$vuetify.breakpoint.xs ? "100%" : "320" },
+          attrs: {
+            tile: "",
+            width: _vm.$vuetify.breakpoint.xs ? "100%" : "320",
+          },
         },
         [
+          _c(
+            "v-toolbar",
+            { attrs: { dark: "", dense: "", color: "teal" } },
+            [_c("v-toolbar-title", [_vm._v("General")])],
+            1
+          ),
+          _vm._v(" "),
           _c(
             "v-container",
             [
               _c(
-                "v-row",
+                "v-list",
+                { attrs: { subheader: "", dense: "" } },
                 [
                   _c(
-                    "v-col",
-                    { attrs: { sm: "4" } },
+                    "v-list-item",
                     [
                       _c(
-                        "v-row",
-                        [
-                          _c(
-                            "v-card-text",
-                            { staticClass: "caption text-truncate" },
-                            [
-                              _vm._v(
-                                "\n                        Total games\n                        "
-                              ),
-                              _c("v-divider", { staticClass: "mt-1" }),
-                            ],
-                            1
-                          ),
-                        ],
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Games")])],
                         1
                       ),
                       _vm._v(" "),
                       _c(
-                        "v-row",
+                        "v-list-item-content",
                         [
-                          _c(
-                            "v-card-text",
-                            { staticClass: "caption text-truncate" },
-                            [
-                              _vm._v(
-                                "\n                        Real wins\n                        "
-                              ),
-                              _c("v-divider", { staticClass: "mt-1" }),
-                            ],
-                            1
-                          ),
+                          _c("v-list-item-title", [
+                            _vm._v(_vm._s(_vm.generalStats.gamesCount)),
+                          ]),
                         ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Stats")])],
                         1
                       ),
                       _vm._v(" "),
                       _c(
-                        "v-row",
+                        "v-list-item-content",
+                        [
+                          _c("v-list-item-title", [
+                            _vm._v(_vm._s(_vm.generalStats.generalStatsCount)),
+                          ]),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Real stats")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-item-content",
+                        [
+                          _c("v-list-item-title", [
+                            _vm._v(_vm._s(_vm.generalStats.realStatsCount)),
+                          ]),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Winrate %")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-item-content",
                         [
                           _c(
-                            "v-card-text",
-                            { staticClass: "caption text-truncate" },
+                            "v-list-item-title",
+                            {
+                              style: {
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.generalWinratePercent
+                                ),
+                              },
+                            },
                             [
                               _vm._v(
-                                "\n                        General wins\n                    "
+                                "\n                        " +
+                                  _vm._s(
+                                    _vm.generalStats.generalWinratePercent
+                                  ) +
+                                  "%\n                    "
                               ),
                             ]
                           ),
@@ -24880,65 +25033,67 @@ var render = function () {
                     1
                   ),
                   _vm._v(" "),
-                  _c("v-divider", {
-                    staticClass: "mt-2 mb-2",
-                    attrs: { vertical: "" },
-                  }),
-                  _vm._v(" "),
                   _c(
-                    "v-col",
-                    { attrs: { sm: "4" } },
+                    "v-list-item",
                     [
                       _c(
-                        "v-row",
-                        [
-                          _c(
-                            "v-card-text",
-                            { staticClass: "caption text-center" },
-                            [
-                              _vm._v(
-                                "\n                        " +
-                                  _vm._s(_vm.totals.raw.total_games) +
-                                  "\n                        "
-                              ),
-                              _c("v-divider", { staticClass: "mt-1" }),
-                            ],
-                            1
-                          ),
-                        ],
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Winrate real %")])],
                         1
                       ),
                       _vm._v(" "),
                       _c(
-                        "v-row",
+                        "v-list-item-content",
                         [
                           _c(
-                            "v-card-text",
-                            { staticClass: "caption text-center" },
+                            "v-list-item-title",
+                            {
+                              style: {
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.winrateRealPercent
+                                ),
+                              },
+                            },
                             [
                               _vm._v(
                                 "\n                        " +
-                                  _vm._s(_vm.totals.raw.real_wins) +
-                                  "\n                        "
+                                  _vm._s(_vm.generalStats.winrateRealPercent) +
+                                  "%\n                    "
                               ),
-                              _c("v-divider", { staticClass: "mt-1" }),
-                            ],
-                            1
+                            ]
                           ),
                         ],
                         1
                       ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Smurfs")])],
+                        1
+                      ),
                       _vm._v(" "),
                       _c(
-                        "v-row",
+                        "v-list-item-content",
                         [
                           _c(
-                            "v-card-text",
-                            { staticClass: "caption text-center" },
+                            "v-list-item-title",
+                            {
+                              style: {
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.smurfsCount
+                                ),
+                              },
+                            },
                             [
                               _vm._v(
                                 "\n                        " +
-                                  _vm._s(_vm.totals.raw.general_wins) +
+                                  _vm._s(_vm.generalStats.smurfsCount) +
                                   "\n                    "
                               ),
                             ]
@@ -24950,74 +25105,247 @@ var render = function () {
                     1
                   ),
                   _vm._v(" "),
-                  _c("v-divider", {
-                    staticClass: "mt-2 mb-2",
-                    attrs: { vertical: "" },
-                  }),
-                  _vm._v(" "),
                   _c(
-                    "v-col",
-                    { attrs: { sm: "4" } },
+                    "v-list-item",
                     [
                       _c(
-                        "v-row",
-                        [
-                          _c(
-                            "v-card-text",
-                            { staticClass: "caption text-center" },
-                            [_c("v-divider", { staticClass: "mt-6" })],
-                            1
-                          ),
-                        ],
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Smurfs %")])],
                         1
                       ),
                       _vm._v(" "),
                       _c(
-                        "v-row",
+                        "v-list-item-content",
                         [
                           _c(
-                            "v-card-text",
+                            "v-list-item-title",
                             {
-                              staticClass: "caption text-center",
                               style: {
-                                color:
-                                  _vm.totals.percents.real_wins >= 50
-                                    ? "green"
-                                    : "red",
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.smurfsPercent
+                                ),
                               },
                             },
                             [
                               _vm._v(
                                 "\n                        " +
-                                  _vm._s(_vm.totals.percents.real_wins) +
-                                  "%\n                        "
+                                  _vm._s(_vm.generalStats.smurfsPercent) +
+                                  "%\n                    "
                               ),
-                              _c("v-divider", { staticClass: "mt-1" }),
-                            ],
-                            1
+                            ]
                           ),
                         ],
                         1
                       ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("W/O")])],
+                        1
+                      ),
                       _vm._v(" "),
                       _c(
-                        "v-row",
+                        "v-list-item-content",
                         [
                           _c(
-                            "v-card-text",
+                            "v-list-item-title",
                             {
-                              staticClass: "caption text-center",
                               style: {
-                                color:
-                                  _vm.totals.percents.general_wins >= 50
-                                    ? "green"
-                                    : "red",
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.woCount
+                                ),
                               },
                             },
                             [
                               _vm._v(
                                 "\n                        " +
-                                  _vm._s(_vm.totals.percents.general_wins) +
+                                  _vm._s(_vm.generalStats.woCount) +
+                                  "\n                    "
+                              ),
+                            ]
+                          ),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("W/O %")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-item-content",
+                        [
+                          _c(
+                            "v-list-item-title",
+                            {
+                              style: {
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.woPercent
+                                ),
+                              },
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.generalStats.woPercent) +
+                                  "%\n                    "
+                              ),
+                            ]
+                          ),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Drop")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-item-content",
+                        [
+                          _c(
+                            "v-list-item-title",
+                            {
+                              style: {
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.dropCount
+                                ),
+                              },
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.generalStats.dropCount) +
+                                  "\n                    "
+                              ),
+                            ]
+                          ),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Drop %")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-item-content",
+                        [
+                          _c(
+                            "v-list-item-title",
+                            {
+                              style: {
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.dropPercent
+                                ),
+                              },
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.generalStats.dropPercent) +
+                                  "%\n                    "
+                              ),
+                            ]
+                          ),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Draw")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-item-content",
+                        [
+                          _c(
+                            "v-list-item-title",
+                            {
+                              style: {
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.drawCount
+                                ),
+                              },
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.generalStats.drawCount) +
+                                  "\n                    "
+                              ),
+                            ]
+                          ),
+                        ],
+                        1
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    [
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("Draw %")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-item-content",
+                        [
+                          _c(
+                            "v-list-item-title",
+                            {
+                              style: {
+                                color: _vm.getTextColor(
+                                  _vm.generalStats.drawPercent
+                                ),
+                              },
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.generalStats.drawPercent) +
                                   "%\n                    "
                               ),
                             ]
@@ -26283,18 +26611,18 @@ var render = function () {
         [
           _c("TotalStatCardComponent", {
             class: _vm.$vuetify.breakpoint.smAndUp ? ["ml-2", "mr-2"] : "ml-3",
-            attrs: { totals: _vm.totals },
+            attrs: { generalStats: _vm.generalStats },
           }),
           _vm._v(" "),
           _c("BestStatCardComponent", {
             class: _vm.$vuetify.breakpoint.smAndUp ? ["ml-2", "mr-2"] : "ml-3",
-            attrs: { bestDataResults: _vm.bestDataResults.bestMaps },
+            attrs: { bestMaps: _vm.bestMaps },
           }),
           _vm._v(" "),
           _c("FinalStatCardComponent", {
             class: _vm.$vuetify.breakpoint.smAndUp ? ["ml-2", "mr-2"] : "ml-5",
             attrs: {
-              finalResults: _vm.bestDataResults,
+              finalResults: _vm.bestMaps,
               selectedSeason: _vm.selectedSeason,
             },
           }),

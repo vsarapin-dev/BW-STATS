@@ -24,6 +24,11 @@ class Season extends Model
 
     public function totalStats(): HasOne
     {
-        return $this->hasOne(GameStatTotalValue::class);
+        return $this->hasOne(GeneralStats::class);
+    }
+
+    public function bestMap(): HasMany
+    {
+        return $this->hasMany(BestMap::class);
     }
 }

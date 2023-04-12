@@ -1,7 +1,7 @@
 <template>
     <v-card v-if="finalResults.percents && finalResults.maxStreaks" class="mt-10"
             :width="$vuetify.breakpoint.xs ? '100%' : '550'">
-        <SnackBar :visible="showSnackBar" :message="'Stats updated successfully'" @close="showSnackBar = false"/>
+        <SnackBar :visible="showSnackBar" :message="message" @close="showSnackBar = false"/>
         <v-container>
             <v-row>
                 <v-col xs="12">
@@ -127,6 +127,16 @@
                         >
                         </v-text-field>
                     </v-card-text>
+                    <v-card-text class="pt-0 pb-0">
+                        <v-text-field
+                            disabled
+                            v-model="randomPercent"
+                            dense
+                            class="caption"
+                            label="Random %"
+                        >
+                        </v-text-field>
+                    </v-card-text>
                 </v-col>
                 <v-divider vertical class="mt-2 mb-2"></v-divider>
                 <v-col xs="12">
@@ -168,6 +178,7 @@ export default {
     props: ['finalResults', 'selectedSeason'],
     data() {
         return {
+            message: '',
             dateSeasonStarted: null,
             dateSeasonEnded: null,
             menuSeasonStarted: false,
@@ -182,6 +193,7 @@ export default {
             placementMatches: null,
             smurfPercent: null,
             woPercent: null,
+            randomPercent: null,
             seasonEnded: null,
         }
     },
@@ -190,10 +202,22 @@ export default {
     },
     watch: {
         finalResults(value) {
-            this.woPercent = value?.percents?.woPercent + '%';
-            this.smurfPercent = value?.percents?.smurfPercent + '%';
-            this.winStreak = value?.maxStreaks?.maxDefeats;
-            this.loseStreak = value?.maxStreaks?.maxWins;
+            if (value.hasOwnProperty('percents') ||
+                value.hasOwnProperty('maxStreaks') ||
+                value.hasOwnProperty('editableFields'))
+            {
+                this.woPercent = value?.percents?.woPercent + '%';
+                this.smurfPercent = value?.percents?.smurfPercent + '%';
+                this.randomPercent = value?.percents?.randomPercent + '%';
+                this.winStreak = value?.maxStreaks?.maxDefeats;
+                this.loseStreak = value?.maxStreaks?.maxWins;
+                this.minSeasonMmr = value?.editableFields?.minSeasonMmr;
+                this.maxSeasonMmr = value?.editableFields?.maxSeasonMmr;
+                this.finalSeasonMmr = value?.editableFields?.finalSeasonMmr;
+                this.placementMatches = value?.editableFields?.placementMatches;
+                this.dateSeasonStarted = value?.editableFields?.seasonStarted;
+                this.dateSeasonEnded = value?.editableFields?.seasonEnded;
+            }
         },
     },
     computed: {
@@ -224,7 +248,8 @@ export default {
         },
         updateFinalStartCard() {
             this.showButton = false;
-            let dataToSend = {
+
+            API.post('/api/auth/total-values/update', {
                 'season_id': this.selectedSeason,
                 'min_season_mmr': this.minSeasonMmr,
                 'max_season_mmr': this.maxSeasonMmr,
@@ -232,13 +257,10 @@ export default {
                 'placement_matches': this.placementMatches,
                 'season_started': this.parseDate(this.formatDate(this.dateSeasonStarted)),
                 'season_ended': this.parseDate(this.formatDate(this.dateSeasonEnded)),
-            };
-            dataToSend = Object.fromEntries(Object.entries(dataToSend).filter(([_, v]) => v != null))
-
-            console.log(dataToSend)
-
-            API.post('/api/auth/total-values/update', dataToSend)
+            })
             .then(res => {
+                this.message = res.data.message;
+                this.showSnackBar = true;
                 console.log(res.data)
             })
             .catch(e => {

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Facades\GeneralizedStats;
+use App\Facades\GeneralizedStats\GeneralizedStats;
 use Illuminate\Support\ServiceProvider;
 
 class GeneralizedStatsServiceProvider extends ServiceProvider

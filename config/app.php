@@ -192,7 +192,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'GeneralizedStats' => \App\Facades\GeneralizedStatsFacade::class,
+        'GeneralizedStats' => \App\Facades\GeneralizedStats\Facade\GeneralizedStatsFacade::class,
     ])->toArray(),
 
 ];

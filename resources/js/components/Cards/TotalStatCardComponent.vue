@@ -1,68 +1,153 @@
 <template>
-    <v-card v-if="totals.raw.total_games > 0" class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '320'">
+    <v-card v-if="generalStats" tile class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '320'">
+        <v-toolbar
+            dark
+            dense
+            color="teal"
+        >
+            <v-toolbar-title>General</v-toolbar-title>
+        </v-toolbar>
         <v-container>
-            <v-row>
-                <v-col sm="4">
-                    <v-row>
-                        <v-card-text class="caption text-truncate">
-                            Total games
-                            <v-divider class="mt-1"></v-divider>
-                        </v-card-text>
-                    </v-row>
-                    <v-row>
-                        <v-card-text class="caption text-truncate">
-                            Real wins
-                            <v-divider class="mt-1"></v-divider>
-                        </v-card-text>
-                    </v-row>
-                    <v-row>
-                        <v-card-text class="caption text-truncate">
-                            General wins
-                        </v-card-text>
-                    </v-row>
-                </v-col>
-                    <v-divider class="mt-2 mb-2" vertical></v-divider>
-                <v-col sm="4">
-                    <v-row>
-                        <v-card-text class="caption text-center">
-                            {{ totals.raw.total_games }}
-                            <v-divider class="mt-1"></v-divider>
-                        </v-card-text>
-                    </v-row>
-                    <v-row>
-                        <v-card-text class="caption text-center">
-                            {{ totals.raw.real_wins }}
-                            <v-divider class="mt-1"></v-divider>
-                        </v-card-text>
-                    </v-row>
-                    <v-row>
-                        <v-card-text class="caption text-center">
-                            {{ totals.raw.general_wins }}
-                        </v-card-text>
-                    </v-row>
-                </v-col>
-                    <v-divider class="mt-2 mb-2" vertical></v-divider>
-                <v-col sm="4">
-                    <v-row>
-                        <v-card-text class="caption text-center">
-                            <v-divider class="mt-6"></v-divider>
-                        </v-card-text>
-                    </v-row>
-                    <v-row>
-                        <v-card-text class="caption text-center"
-                                     :style="{color:  totals.percents.real_wins >= 50 ? 'green' : 'red'}">
-                            {{ totals.percents.real_wins }}%
-                            <v-divider class="mt-1"></v-divider>
-                        </v-card-text>
-                    </v-row>
-                    <v-row>
-                        <v-card-text class="caption text-center"
-                                     :style="{color: totals.percents.general_wins >= 50 ? 'green' : 'red'}">
-                            {{ totals.percents.general_wins }}%
-                        </v-card-text>
-                    </v-row>
-                </v-col>
-            </v-row>
+            <v-list subheader dense>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Games</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title>{{ generalStats.gamesCount }}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Stats</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title>{{ generalStats.generalStatsCount }}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Real stats</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title>{{ generalStats.realStatsCount }}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Winrate %</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.generalWinratePercent) }">
+                            {{ generalStats.generalWinratePercent }}%
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Winrate real %</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.winrateRealPercent) }">
+                            {{ generalStats.winrateRealPercent }}%
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Smurfs</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.smurfsCount) }">
+                            {{ generalStats.smurfsCount }}
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Smurfs %</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.smurfsPercent) }">
+                            {{ generalStats.smurfsPercent }}%
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>W/O</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.woCount) }">
+                            {{ generalStats.woCount }}
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>W/O %</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.woPercent) }">
+                            {{ generalStats.woPercent }}%
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Drop</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.dropCount) }">
+                            {{ generalStats.dropCount }}
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Drop %</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.dropPercent) }">
+                            {{ generalStats.dropPercent }}%
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Draw</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.drawCount) }">
+                            {{ generalStats.drawCount }}
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title>Draw %</v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                        <v-list-item-title :style="{color:  getTextColor(generalStats.drawPercent) }">
+                            {{ generalStats.drawPercent }}%
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+            </v-list>
         </v-container>
     </v-card>
 </template>
@@ -70,12 +155,24 @@
 <script>
 export default {
     name: "TotalStatCardComponent",
-    props: ['totals'],
+    props: ['generalStats'],
     watch: {
-        totals(value) {
-          this.totals = value;
+        generalStats(value) {
+            this.generalStats = value;
         },
-    }
+    },
+    methods: {
+        getTextColor(value) {
+            switch (true) {
+                case value <= 45:
+                    return 'red';
+                case value > 45 && value < 55:
+                    return '#a98600';
+                case value >= 55:
+                    return 'green';
+            }
+        },
+    },
 }
 </script>
 

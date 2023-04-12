@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Facades;
+namespace App\Facades\GeneralizedStats\Facade;
 
 
 use Illuminate\Support\Facades\Facade;
