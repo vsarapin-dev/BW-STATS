@@ -3,13 +3,11 @@
 
 namespace App\Services\GameStat;
 
+use GeneralizedStats;
 use App\Http\Filters\GameStatFilter;
 use App\Http\Resources\GameStat\GameStatResource;
 use App\Http\Resources\Season\SeasonResource;
 use App\Models\GameStat;
-use App\Models\GameStatTotalValue;
-use App\Models\Map;
-use App\Models\Result;
 use App\Models\Season;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -27,35 +25,40 @@ class Service
 
         $seasonId = $data['season_id'] ?? $userStatQuery->max('season_id');
         $gameStatLastCreatedDate = $userStatQuery->max('created_at');
+        $availableSeasons = SeasonResource::collection(Season::whereIn('id', GameStat::select('season_id')->distinct()->get()->pluck('season_id'))->get());
+        $lastUpdated = $gameStatLastCreatedDate ? Carbon::parse($gameStatLastCreatedDate)->format('d F Y') : null;
+        $currentSeason = $seasonId ? new SeasonResource(Season::whereId($seasonId)->first()) : null;
 
-        $gameStatTotalValueResult = $this->getWinStats($seasonId);
-        $bestMaps = $this->getBestMaps($seasonId);
-        $woPercent = $this->getWOPercent($seasonId);
-        $smurfPercent = $this->getSmurfPercent($seasonId);
-        $maxStreaks = $this->getMaxStreaks($seasonId);
-
-
-        $gameStatFilterResult = $this->paginate(
+        $gameStatDataTableResult = $this->paginate(
             GameStatResource::collection(GameStat::whereUserId(Auth::id())->whereSeasonId($seasonId)->orderBy('game_number', 'desc')->get()),
             $data['itemsPerPage'],
             $data['page']
         );
 
-        return response()->json([
-            'data' => $gameStatFilterResult,
-            'gameStatTotalValueResult' => $gameStatTotalValueResult,
-            'currentSeason' => $seasonId ? new SeasonResource(Season::whereId($seasonId)->first()) : null,
-            'lastUpdated' => $gameStatLastCreatedDate ? Carbon::parse($gameStatLastCreatedDate)->format('d F Y') : null,
-            'availableSeasons' => SeasonResource::collection(Season::whereIn('id', GameStat::select('season_id')->distinct()->get()->pluck('season_id'))->get()),
-            'bestDataResults' => [
-                'bestMaps' => $bestMaps,
-                'maxStreaks' => $maxStreaks,
-                'percents' => [
-                    'woPercent' => $woPercent,
-                    'smurfPercent' => $smurfPercent,
-                ],
-            ],
-        ]);
+        $result = [
+            'data' => $gameStatDataTableResult,
+            'currentSeason' => $currentSeason,
+            'lastUpdated' => $lastUpdated,
+            'availableSeasons' => $availableSeasons,
+            'matches_count' => GameStat::join('races as my_race', 'game_stats.my_race_id', '=', 'my_race.id')
+                ->join('races as enemy_race', 'game_stats.enemy_race_id', '=', 'enemy_race.id')
+                ->join('results', 'game_stats.result_id', '=', 'results.id')
+                ->whereNull('enemy_random_race_id')
+                ->whereIn('results.name', ['W', 'L'])
+                ->select(
+                    DB::raw('count(*) as total_matches'),
+                    DB::raw('sum(case when results.name = "W" then 1 else 0 end) as total_wins'),
+                    DB::raw('sum(case when results.name = "L" then 1 else 0 end) as total_losses'),
+                    DB::raw('ROUND(sum(case when results.name = "W" then 1 else 0 end) / count(*) * 100, 2) as win_rate')
+                )
+                ->groupBy('my_race.name', 'enemy_race.name')
+                ->orderByDesc('win_rate')
+                ->selectRaw('CONCAT(LEFT(my_race.name, 1), "v", LEFT(enemy_race.name, 1)) as matchup_shorthand')
+                ->get(),
+        ];
+        $generalizedStats = $seasonId ? json_decode(GeneralizedStats::getAllBestStats($seasonId)->toJson(), true) : [];
+
+        return response()->json(array_merge_recursive($generalizedStats, $result));
     }
 
     public function filter($data): JsonResponse
@@ -63,7 +66,6 @@ class Service
         if (!$data) $data['user_id'] = Auth::id();
 
         $filter = app()->make(GameStatFilter::class, ['queryParams' => array_filter($data)]);
-        $gameStatTotalValueResult = GameStatTotalValue::where('user_id', Auth::id())->first();
         $gameStatFilterResult = $this->paginate(
             GameStatResource::collection(GameStat::filter($filter)->orderBy('game_number', 'desc')->get()),
             $data['itemsPerPage'],
@@ -72,7 +74,6 @@ class Service
 
         return response()->json([
             'gameStatFilterResult' => $gameStatFilterResult,
-            'gameStatTotalValueResult' => $gameStatTotalValueResult,
         ]);
     }
 
@@ -87,6 +88,7 @@ class Service
         $stats = GameStat::create($data);
 
         if (isset($stats)) {
+            GeneralizedStats::setAllBestStats($data['season_id']);
             return response()->json(['message' => 'Row created successfully.']);
         }
         return response()->json(['message' => 'Row not created.']);
@@ -106,112 +108,5 @@ class Service
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
         return new LengthAwarePaginator($items->forPage($page, $perPage)->values(), $items->count(), $perPage, $page, $options);
-    }
-
-    private function getWinStats($season_id): Collection
-    {
-        $userId = Auth::id();
-        $queryString = GameStat::whereUserId($userId)->whereSeasonId($season_id);
-
-        $total_games = $queryString->count();
-
-        $general_wins = $queryString
-            ->whereHas('result', function ($query) {
-                return $query->whereIn('name', ['W', 'W/O']);
-            })->count();
-
-        $real_wins = $queryString
-            ->whereHas('result', function ($query) {
-                return $query->where('name', 'W');
-            })->count();
-
-        return collect([
-            'total_games' => $total_games,
-            'general_wins' => $general_wins,
-            'real_wins' => $real_wins,
-        ]);
-    }
-
-    private function getBestMaps($season_id): ?Collection
-    {
-        return Map::select('maps.name', DB::raw('SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) AS wins, SUM(CASE WHEN results.name = "L" THEN 1 ELSE 0 END) AS losses, (SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) / (SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) + SUM(CASE WHEN results.name = "L" THEN 1 ELSE 0 END))) * 100 AS win_percentage'))
-            ->join('game_stats', 'maps.id', '=', 'game_stats.map_id')
-            ->join('results', 'game_stats.result_id', '=', 'results.id')
-            ->where('game_stats.user_id', Auth::id())
-            ->where('game_stats.season_id', $season_id)
-            ->groupBy('maps.id')
-            ->orderByDesc('win_percentage')
-            ->limit(3)
-            ->get();
-    }
-
-    private function getSmurfPercent($season_id): float
-    {
-        $total_games = GameStat::whereUserId(Auth::id())
-            ->whereSeasonId($season_id)
-            ->count();
-
-        $smurfs_games = GameStat::whereUserId(Auth::id())
-            ->whereSeasonId($season_id)
-            ->whereIsSmurf(true)
-            ->count();
-
-        $smurfPercent = $total_games > 0 ? $smurfs_games / $total_games * 100 : 0;
-
-        return round((float)$smurfPercent, 2);
-    }
-
-    private function getWOPercent($season_id): float
-    {
-        $games = GameStat::whereUserId(Auth::id())
-            ->whereSeasonId($season_id)
-            ->get();
-
-        $games->load('result');
-
-        $total_games = $games->count();
-        $wo_games = $games->filter(function ($game) {
-            return $game->result->name == 'W/O';
-        })->count();
-
-        $wo_percent = $total_games > 0 ? $wo_games / $total_games * 100 : 0;
-        return round((float)$wo_percent, 2);
-    }
-
-    private function getMaxStreaks($season_id): array
-    {
-        $winResultId = Result::whereName('W')->first()->id;
-        $defeatResultId = Result::whereName('L')->first()->id;
-
-        $gameStats = GameStat::whereUserId(Auth::id())
-            ->whereSeasonId($season_id)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        $maxWins = $this->computeGameResultStreak($gameStats, $winResultId);
-        $maxDefeats = $this->computeGameResultStreak($gameStats, $defeatResultId);
-
-        return [
-            'maxWins' => $maxWins,
-            'maxDefeats' => $maxDefeats
-        ];
-    }
-
-    private function computeGameResultStreak($stats, $resultToFind): int
-    {
-        $maxValue = 0;
-        $currentValue = 0;
-
-        foreach ($stats->pluck('result_id') as $resultId) {
-            if ($resultId === $resultToFind) {
-                $currentValue++;
-                if ($currentValue > $maxValue) {
-                    $maxValue = $currentValue;
-                }
-            } else {
-                $currentValue = 0;
-            }
-        }
-        return $maxValue;
     }
 }

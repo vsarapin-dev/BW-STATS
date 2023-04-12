@@ -14,13 +14,14 @@
 
         <v-row>
             <TotalStatCardComponent
-                :totals="totals"
+                :generalStats="generalStats"
                 :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
             <BestStatCardComponent
-                :bestDataResults="bestDataResults.bestMaps"
+                :bestMaps="bestMaps"
                 :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
             <FinalStatCardComponent
-                :finalResults="bestDataResults"
+                :finalResults="bestMaps"
+                :selectedSeason="selectedSeason"
                 :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-5'"/>
         </v-row>
         <v-data-table
@@ -152,21 +153,11 @@ export default {
             isOpenedCreateNewDialog: false,
             isOpenedFilterDialog: false,
             seasons: [],
-            bestDataResults: [],
+            bestMaps: [],
             selectedSeason: null,
             lastUpdatedAtDate: null,
             selectedToDelete: [],
-            totals: {
-                raw: {
-                    total_games: 0,
-                    real_wins: 0,
-                    general_wins: 0,
-                },
-                percents: {
-                    real_wins: 0,
-                    general_wins: 0,
-                },
-            },
+            generalStats: null,
             headers: [
                 {text: 'Game #', value: 'game_number', width: 100},
                 {text: 'Map', value: 'map'},
@@ -239,29 +230,28 @@ export default {
                 .then(res => {
                     this.resetVariables();
                     if (res.data.hasOwnProperty('data') &&
-                        res.data.hasOwnProperty('gameStatTotalValueResult') &&
+                        res.data.hasOwnProperty('generalStats') &&
                         res.data.hasOwnProperty('currentSeason') &&
                         res.data.hasOwnProperty('availableSeasons') &&
                         res.data.hasOwnProperty('lastUpdated') &&
-                        res.data.hasOwnProperty('bestDataResults') &&
+                        res.data.hasOwnProperty('bestMaps') &&
                         res.data.data !== null &&
-                        res.data.gameStatTotalValueResult !== null &&
+                        res.data.generalStats !== null &&
                         res.data.availableSeasons !== null &&
                         res.data.currentSeason !== null &&
                         res.data.lastUpdated !== null &&
-                        res.data.bestDataResults !== null)
+                        res.data.bestMaps !== null)
                     {
-                        this.bestDataResults = res.data.bestDataResults;
+                        this.bestMaps = res.data.bestMaps;
                         this.lastUpdatedAtDate = res.data.lastUpdated;
                         this.stats = res.data.data.data;
-                        this.totals.raw = res.data.gameStatTotalValueResult;
+                        this.generalStats = res.data.generalStats;
                         this.seasons = res.data.availableSeasons;
                         this.selectedSeason = res.data.currentSeason.id;
                         this.setPageVariables(res.data.data);
-                        this.computeWinPercents(this.totals);
                     }
                     this.loadingData = false;
-                    console.log(this.bestDataResults)
+                    console.log(res.data)
                 })
                 .catch(e => {
                     this.loadingData = false;
@@ -294,41 +284,12 @@ export default {
             this.pageCount = meta.last_page;
         },
         resetVariables() {
-            this.resetTotals();
-            this.bestDataResults = [];
+            this.generalStats = null;
+            this.bestMaps = [];
             this.lastUpdatedAtDate = null;
             this.stats = [];
             this.page = 0;
             this.pageCount = 0;
-        },
-        resetTotals() {
-            this.totals = {
-                raw: {
-                    total_games: 0,
-                    real_wins: 0,
-                    general_wins: 0,
-                },
-                percents: {
-                    real_wins: 0,
-                    general_wins: 0,
-                },
-            };
-        },
-        computeWinPercents(totals) {
-            if (totals.raw.total_games > 0 &&
-                totals.raw.real_wins > 0 &&
-                totals.raw.general_wins > 0
-            ) {
-                totals.percents.real_wins = (totals.raw.real_wins / totals.raw.total_games * 100);
-                totals.percents.general_wins = (totals.raw.general_wins / totals.raw.total_games * 100);
-
-                if (totals.percents.real_wins % 1 !== 0) {
-                    totals.percents.real_wins = totals.percents.real_wins.toFixed(2);
-                }
-                if (totals.percents.general_wins % 1 !== 0) {
-                    totals.percents.general_wins = totals.percents.general_wins.toFixed(2);
-                }
-            }
         },
     }
 }

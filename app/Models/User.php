@@ -49,6 +49,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(GameStat::class);
     }
 
+    public function totalStats(): HasMany
+    {
+        return $this->hasMany(GeneralStats::class);
+    }
+
+    public function bestMap(): HasMany
+    {
+        return $this->hasMany(BestMap::class);
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

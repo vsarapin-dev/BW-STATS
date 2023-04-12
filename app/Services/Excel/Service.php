@@ -9,6 +9,8 @@ use App\Models\Map;
 use App\Models\Race;
 use App\Models\Result;
 use App\Models\Season;
+use App\Models\Total;
+use GeneralizedStats;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -16,7 +18,7 @@ class Service
 {
     public function importFile($excel_file, $season_number)
     {
-        $data = $this->addSeasonColumnWithData($excel_file);
+        $data = $this->addSeasonColumnToData($excel_file);
         $season_id = Season::where('season_number', $season_number)->first()->id;
         $this->insertIntoDB($data, $season_id);
 
@@ -38,7 +40,7 @@ class Service
             $isSmurf = false;
             if ($enemyCurrentMmr > 0 && $enemyMaxMmr > 0)
             {
-                $isSmurf = $enemyMaxMmr - $enemyCurrentMmr > 200;
+                $isSmurf = $enemyMaxMmr - $enemyCurrentMmr >= 200;
             }
 
             GameStat::create([
@@ -59,9 +61,14 @@ class Service
                 'is_smurf' => $isSmurf,
             ]);
         }
+        $total = Total::firstOrCreate([
+            'user_id' => Auth::id(),
+            'season_id' => $season_id,
+        ]);
+        GeneralizedStats::setAllBestStats($season_id, $total->id);
     }
 
-    private function addSeasonColumnWithData($excel_file): array
+    private function addSeasonColumnToData($excel_file): array
     {
         $spreadsheet = IOFactory::load($excel_file);
 

@@ -5,12 +5,12 @@
                 <v-col sm="4">
                     <v-row v-for="(dataResult, index) in allResults" :key="`${dataResult.name}-${index}`">
                         <v-card-text class="text-truncate">
-                            <span class="caption">{{ dataResult.name }}</span>
+                            <span class="caption">{{ dataResult.map_name }}</span>
                             <v-divider class="mt-1" v-if="allResults.length - 1 > index"></v-divider>
                         </v-card-text>
                     </v-row>
                 </v-col>
-                <v-divider vertical class="mt-2 mb-2"></v-divider>
+                <v-divider vertical class="mt-4 mb-4"></v-divider>
                 <v-col sm="4">
                     <v-row v-for="(dataResult, index) in allResults" :key="`${dataResult.cell_color}-${index}`">
                         <v-card-text class="text-center" :style="{backgroundColor: dataResult.cell_color}">
@@ -18,7 +18,7 @@
                         </v-card-text>
                     </v-row>
                 </v-col>
-                <v-divider vertical class="mt-2 mb-2"></v-divider>
+                <v-divider vertical class="mt-4 mb-4"></v-divider>
                 <v-col sm="4">
                     <v-row v-for="(dataResult, index) in allResults" :key="`${dataResult.win_percentage}-${index}`">
                         <v-card-text class="text-center">
@@ -35,12 +35,12 @@
 <script>
 export default {
     name: "BestStatCardComponent",
-    props: ['bestDataResults'],
+    props: ['finalSeasonDataResults'],
     computed: {
         allResults() {
-            if (!this.bestDataResults) return;
+            if (!this.finalSeasonDataResults) return;
 
-            return this.bestDataResults.map(i => {
+            return this.finalSeasonDataResults.map(i => {
                 let parsedWinPercentage = parseFloat(i.win_percentage);
                 return {
                     ...i,

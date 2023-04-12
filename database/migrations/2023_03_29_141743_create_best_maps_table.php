@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('game_stat_total_values', function (Blueprint $table) {
+        Schema::create('best_maps', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->integer('total_games');
-            $table->integer('real_wins');
-            $table->integer('general_wins');
+            $table->foreignId('total_id')->constrained()->onDelete('cascade');
+            $table->foreignId('map_id')->constrained();
+            $table->integer('wins');
+            $table->integer('losses');
+            $table->float('win_percentage');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('game_stat_total_values');
+        Schema::dropIfExists('best_maps');
     }
 };

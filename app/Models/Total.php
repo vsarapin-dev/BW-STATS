@@ -6,24 +6,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Map extends Model
+class Total extends Model
 {
     use HasFactory;
 
-    protected $table = 'maps';
+    protected $table = 'totals';
 
     protected $fillable = [
-        'name',
+        'user_id',
+        'season_id',
     ];
 
-    public function gameStat(): HasMany
-    {
-        return $this->hasMany(GameStat::class);
-    }
-
-    public function bestMap(): HasMany
+    public function bestMaps(): HasMany
     {
         return $this->hasMany(BestMap::class);
+    }
+
+    public function generalStats(): HasMany
+    {
+        return $this->hasMany(GeneralStats::class);
     }
 
     public function mapWinrate(): HasMany

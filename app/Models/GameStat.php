@@ -62,17 +62,17 @@ class GameStat extends Model
 
     public function myRace(): BelongsTo
     {
-        return $this->belongsTo(Race::class, 'my_race_id', 'id');
+        return $this->belongsTo(Race::class, 'my_race_id');
     }
 
     public function enemyRace(): BelongsTo
     {
-        return $this->belongsTo(Race::class, 'enemy_race_id', 'id');
+        return $this->belongsTo(Race::class, 'enemy_race_id');
     }
 
     public function enemyRandomRace(): BelongsTo
     {
-        return $this->belongsTo(Race::class, 'enemy_random_race_id', 'id');
+        return $this->belongsTo(Race::class, 'enemy_random_race_id');
     }
 
     public function getMatchupAttribute() : string
