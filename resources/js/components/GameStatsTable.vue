@@ -16,6 +16,15 @@
             <TotalStatCardComponent
                 :generalStats="generalStats"
                 :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
+            <MapWinrateCardComponent
+                :mapWinrate="mapWinrate"
+                :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
+            <RaceWinrateCardComponent
+                :raceWinrate="raceWinrate"
+                :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
+            <MmrWinrateCardComponent
+                :mmrWinrate="mmrWinrate"
+                :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
             <BestStatCardComponent
                 :bestMaps="bestMaps"
                 :class="$vuetify.breakpoint.smAndUp ? ['ml-2', 'mr-2'] : 'ml-3'"/>
@@ -131,6 +140,9 @@ import FilterGameStartDialog from "./Dialogues/FilterGameStatDialogue";
 import TotalStatCardComponent from "./Cards/TotalStatCardComponent";
 import FinalStatCardComponent from "./Cards/FinalStatCardComponent";
 import BestStatCardComponent from "./Cards/BestStatCardComponent";
+import MapWinrateCardComponent from "./Cards/MapWinrateCardComponent";
+import RaceWinrateCardComponent from "./Cards/RaceWinrateCardComponent";
+import MmrWinrateCardComponent from "./Cards/MmrWinrateCardComponent";
 import Loader from "./Loader";
 
 export default {
@@ -142,6 +154,9 @@ export default {
         FinalStatCardComponent,
         TotalStatCardComponent,
         BestStatCardComponent,
+        MapWinrateCardComponent,
+        RaceWinrateCardComponent,
+        MmrWinrateCardComponent,
     },
     data() {
         return {
@@ -158,6 +173,9 @@ export default {
             lastUpdatedAtDate: null,
             selectedToDelete: [],
             generalStats: null,
+            mapWinrate: null,
+            raceWinrate: null,
+            mmrWinrate: null,
             headers: [
                 {text: 'Game #', value: 'game_number', width: 100},
                 {text: 'Map', value: 'map'},
@@ -229,6 +247,15 @@ export default {
             })
                 .then(res => {
                     this.resetVariables();
+
+                    if (res.data.hasOwnProperty('mapWinrate'))
+                        this.mapWinrate = res.data.mapWinrate;
+                    if (res.data.hasOwnProperty('raceWinrate'))
+                        this.raceWinrate = res.data.raceWinrate;
+                    if (res.data.hasOwnProperty('mmrWinrate'))
+                        this.mmrWinrate = res.data.mmrWinrate;
+
+
                     if (res.data.hasOwnProperty('data') &&
                         res.data.hasOwnProperty('generalStats') &&
                         res.data.hasOwnProperty('currentSeason') &&
@@ -284,6 +311,9 @@ export default {
             this.pageCount = meta.last_page;
         },
         resetVariables() {
+            this.mmrWinrate = null;
+            this.mapWinrate = null;
+            this.raceWinrate = null;
             this.generalStats = null;
             this.bestMaps = [];
             this.lastUpdatedAtDate = null;

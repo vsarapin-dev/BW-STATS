@@ -31,4 +31,14 @@ class Total extends Model
     {
         return $this->hasMany(MapWinrate::class);
     }
+
+    public function raceWinrate(): HasMany
+    {
+        return $this->hasMany(RaceWinrate::class);
+    }
+
+    public function mmrWinrate(): HasMany
+    {
+        return $this->hasMany(MmrWinrate::class);
+    }
 }

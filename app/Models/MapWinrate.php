@@ -15,7 +15,9 @@ class MapWinrate extends Model
     protected $fillable = [
         'total_id',
         'map_id',
-        'stats',
+        'wins',
+        'losses',
+        'win_percentage',
         'games_played',
     ];
 

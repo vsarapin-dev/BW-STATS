@@ -155,8 +155,8 @@ class GeneralStatsSaver extends BaseStatsSaver
     {
         return [
             'games_count' => $this->gamesCount,
-            'general_stats_count' => "{$this->wins}W-{$this->defeats}L",
-            'real_stats_count' => "{$this->wins}W-{$this->defeats}L-{$this->wo}WO",
+            'general_stats_count' => "{$this->wins}W - {$this->defeats}L",
+            'real_stats_count' => "{$this->wins}W - {$this->defeats}L - {$this->wo}WO",
         ];
     }
 

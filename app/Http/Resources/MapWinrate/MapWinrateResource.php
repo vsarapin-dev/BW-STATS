@@ -15,8 +15,10 @@ class MapWinrateResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'map_id' => $this->map->name,
-            'stats' => $this->stats,
+            'map' => $this->map->name,
+            'wins' => $this->wins,
+            'losses' => $this->losses,
+            'win_percentage' => round($this->win_percentage, 2),
             'games_played' => $this->games_played,
         ];
     }

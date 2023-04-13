@@ -17,7 +17,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('total_id')->constrained()->onDelete('cascade');
             $table->foreignId('map_id')->constrained();
-            $table->string('stats');
+            $table->bigInteger('wins');
+            $table->bigInteger('losses');
+            $table->float('win_percentage');
             $table->bigInteger('games_played');
             $table->timestamps();
         });

@@ -7,6 +7,8 @@ use App\Facades\GeneralizedStats\StatsSaver\BestMapsStatsSaver;
 use App\Facades\GeneralizedStats\StatsSaver\CachedStatsFactory;
 use App\Facades\GeneralizedStats\StatsSaver\GeneralStatsSaver;
 use App\Facades\GeneralizedStats\StatsSaver\MapWinrateStatsSaver;
+use App\Facades\GeneralizedStats\StatsSaver\MmrWinrateSaver;
+use App\Facades\GeneralizedStats\StatsSaver\RaceWinrateStatsSaver;
 use App\Http\Resources\Total\TotalResource;
 use App\Models\Total;
 use Illuminate\Support\Facades\Auth;
@@ -25,10 +27,14 @@ class GeneralizedStats
         $generalStatsSaver = $cachedStatsFactory->createObject(GeneralStatsSaver::class);
         $bestMapsStatsSaver = $cachedStatsFactory->createObject(BestMapsStatsSaver::class);
         $mapWinrateStatsSaver = $cachedStatsFactory->createObject(MapWinrateStatsSaver::class);
+        $raceWinrate = $cachedStatsFactory->createObject(RaceWinrateStatsSaver::class);
+        $mmrWinrate = $cachedStatsFactory->createObject(MmrWinrateSaver::class);
 
         $generalStatsSaver->computeAndSaveData();
         $bestMapsStatsSaver->computeAndSaveData();
         $mapWinrateStatsSaver->computeAndSaveData();
+        $raceWinrate->computeAndSaveData();
+        $mmrWinrate->computeAndSaveData();
     }
 
 

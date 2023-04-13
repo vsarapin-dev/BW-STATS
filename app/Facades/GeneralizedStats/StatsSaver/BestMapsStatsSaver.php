@@ -20,7 +20,13 @@ class BestMapsStatsSaver extends BaseStatsSaver
 
     private function computeBestMaps(): ?Collection
     {
-        return Map::select('maps.name', 'maps.id', DB::raw('SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) AS wins, SUM(CASE WHEN results.name = "L" THEN 1 ELSE 0 END) AS losses, (SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) / (SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) + SUM(CASE WHEN results.name = "L" THEN 1 ELSE 0 END))) * 100 AS win_percentage'))
+        return Map::select('maps.name', 'maps.id', DB::raw(
+            'SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) AS wins,
+                    SUM(CASE WHEN results.name = "L" THEN 1 ELSE 0 END) AS losses,
+                    (SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) /
+                    (SUM(CASE WHEN results.name = "W" THEN 1 ELSE 0 END) +
+                     SUM(CASE WHEN results.name = "L" THEN 1 ELSE 0 END))) *
+                      100 AS win_percentage'))
             ->join('game_stats', 'maps.id', '=', 'game_stats.map_id')
             ->join('results', 'game_stats.result_id', '=', 'results.id')
             ->where('game_stats.user_id', $this->userId)
