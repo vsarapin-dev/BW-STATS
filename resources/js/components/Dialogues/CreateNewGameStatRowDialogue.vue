@@ -7,7 +7,7 @@
         >
             <v-card>
                 <v-card-title>
-                    <span class="text-h5 ml-3">Add new game</span>
+                    <span class="text-h5 ml-3">{{ headerName }}</span>
                 </v-card-title>
                 <v-card-text>
                     <v-container>
@@ -173,11 +173,20 @@
                         Close
                     </v-btn>
                     <v-btn
+                        v-if="!updateRow"
                         color="blue darken-1"
                         text
                         @click="storeStats"
                     >
                         Save
+                    </v-btn>
+                    <v-btn
+                        v-if="updateRow"
+                        color="blue darken-1"
+                        text
+                        @click="storeStats"
+                    >
+                        Update
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -190,7 +199,7 @@ import API from "../../api";
 
 export default {
     name: "CreateNewGameStatRowDialogue",
-    props: ['visible'],
+    props: ['visible', 'headerName', 'updateRow'],
     data() {
         return {
             enemyCurrentMmr: 0,

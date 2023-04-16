@@ -30,4 +30,9 @@ class Map extends Model
     {
         return $this->hasMany(MapWinrate::class);
     }
+
+    public function mapRace(): HasMany
+    {
+        return $this->hasMany(MapRace::class);
+    }
 }

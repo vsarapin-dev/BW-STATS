@@ -8,11 +8,11 @@
         >
             <v-list-item>
                 <v-list-item-avatar>
-                    <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
+                    <v-img src="/img/icon.png"></v-img>
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                    <v-list-item-title>John Leider</v-list-item-title>
+                    <v-list-item-title>{{ login }}</v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
 
@@ -63,6 +63,7 @@ export default {
     data() {
         return {
             access_token: null,
+            login: null,
             drawer: false,
             items: [
                 {title: 'Import', icon: 'mdi-file-arrow-left-right-outline', 'path': '/file-import'},
@@ -71,9 +72,13 @@ export default {
         }
     },
     mounted() {
+        this.getLogin();
         this.getToken();
     },
     methods: {
+        getLogin() {
+            this.login = localStorage.getItem('bw_stats_login');
+        },
         getToken() {
             this.access_token = localStorage.getItem('access_token');
         },

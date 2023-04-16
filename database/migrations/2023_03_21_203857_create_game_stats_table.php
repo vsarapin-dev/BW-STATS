@@ -31,7 +31,6 @@ class CreateGameStatsTable extends Migration
             $table->string('result_comment')->nullable();
             $table->string('global_comment')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

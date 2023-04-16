@@ -7,6 +7,7 @@ namespace App\Facades\GeneralizedStats\StatsSaver;
 use App\Models\GameStat;
 use App\Models\MmrRank;
 use App\Models\MmrWinrate;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -23,8 +24,13 @@ class MmrWinrateSaver extends BaseStatsSaver
     {
         $mmrRanks = MmrRank::all();
 
-        return $mmrRanks->map(function ($mmrRange) {
-            $res = GameStat::whereBetween('enemy_current_mmr', [$mmrRange->from, $mmrRange->to])
+        $seasonId = $this->seasonId;
+        $userId = $this->userId;
+
+        return $mmrRanks->map(function ($mmrRange) use ($userId, $seasonId) {
+            $res = GameStat::whereUserId($userId)
+                ->whereSeasonId($seasonId)
+                ->whereBetween('enemy_max_mmr', [$mmrRange->from, $mmrRange->to])
                 ->join('results', 'game_stats.result_id', '=', 'results.id')
                 ->whereIn('results.name', ['W', 'L'])
                 ->select(DB::raw('ROUND(

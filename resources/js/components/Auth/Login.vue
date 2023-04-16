@@ -96,6 +96,7 @@ export default {
 
                 axios.post('api/auth/login', {email: this.email, password: this.password,})
                     .then(res => {
+                        localStorage.setItem('bw_stats_login', res.data.user_login)
                         localStorage.setItem('access_token', res.data.access_token);
                         window.location.href = "/game-stats";
                     }).catch(error => {

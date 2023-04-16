@@ -12,7 +12,9 @@ use App\Models\Season;
 use App\Models\Total;
 use GeneralizedStats;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Throwable;
 
 class Service
 {
@@ -27,39 +29,46 @@ class Service
 
     private function insertIntoDB($data, $season_id)
     {
-        foreach ($data as $row) {
-            $myRace = $this->getRaceId($row[2][0]);
-            $enemyRace = $this->getRaceId($row[2][2]);
-            $enemyRandomRace = $this->getRandomRace($row[2]);
+        DB::beginTransaction();
+        try {
+            foreach ($data as $row) {
+                GameStat::withoutEvents(function () use ($row, $season_id) {
+                    $myRace = $this->getRaceId($row[2][0]);
+                    $enemyRace = $this->getRaceId($row[2][2]);
+                    $enemyRandomRace = $this->getRandomRace($row[2]);
 
-            $result_id = $this->getResultId($row[5]);
-            $map_id = $this->getMapId($row[1]);
+                    $result_id = $this->getResultId($row[5]);
+                    $map_id = $this->getMapId($row[1]);
 
-            $enemyCurrentMmr = intval($row[3]);
-            $enemyMaxMmr = intval($row[4]);
-            $isSmurf = false;
-            if ($enemyCurrentMmr > 0 && $enemyMaxMmr > 0)
-            {
-                $isSmurf = $enemyMaxMmr - $enemyCurrentMmr >= 200;
+                    $enemyCurrentMmr = intval($row[3]);
+                    $enemyMaxMmr = intval($row[4]);
+                    $isSmurf = false;
+                    if ($enemyCurrentMmr > 0 && $enemyMaxMmr > 0) {
+                        $isSmurf = $enemyMaxMmr - $enemyCurrentMmr >= 200;
+                    }
+
+                    GameStat::create([
+                        'user_id' => Auth::id(),
+                        'season_id' => $season_id,
+                        'game_number' => intval($row[0]),
+                        'map_id' => $map_id,
+                        'my_race_id' => $myRace,
+                        'enemy_random_race_id' => $enemyRandomRace,
+                        'enemy_race_id' => $enemyRace,
+                        'enemy_current_mmr' => $enemyCurrentMmr,
+                        'enemy_max_mmr' => $enemyMaxMmr,
+                        'result_id' => $result_id,
+                        'result_comment' => $row[6],
+                        'enemy_nickname' => $row[7],
+                        'enemy_login' => strtolower($row[8]),
+                        'global_comment' => $row[9],
+                        'is_smurf' => $isSmurf,
+                    ]);
+                });
+                DB::commit();
             }
-
-            GameStat::create([
-                'user_id' => Auth::id(),
-                'season_id' => $season_id,
-                'game_number' => intval($row[0]),
-                'map_id' => $map_id,
-                'my_race_id' => $myRace,
-                'enemy_random_race_id' => $enemyRandomRace,
-                'enemy_race_id' => $enemyRace,
-                'enemy_current_mmr' => $enemyCurrentMmr,
-                'enemy_max_mmr' => $enemyMaxMmr,
-                'result_id' => $result_id,
-                'result_comment' => $row[6],
-                'enemy_nickname' => $row[7],
-                'enemy_login' => strtolower($row[8]),
-                'global_comment' => $row[9],
-                'is_smurf' => $isSmurf,
-            ]);
+        } catch (Throwable $e) {
+            DB::rollback();
         }
         $total = Total::firstOrCreate([
             'user_id' => Auth::id(),

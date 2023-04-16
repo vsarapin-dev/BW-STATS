@@ -44,7 +44,7 @@ router.beforeEach((to, from, next) => {
         }
     }
 
-    if (to.name === 'login' || to.name === 'register' && token) {
+    if (to.name === 'login' || to.name === 'register' || to.name === null && token) {
         return next({
             name: 'stats'
         })

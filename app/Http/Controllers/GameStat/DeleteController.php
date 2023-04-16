@@ -8,6 +8,6 @@ class DeleteController extends BaseController
 {
     public function __invoke(Request $request)
     {
-        return $this->service->delete($request->ids);
+        return $this->service->delete($request);
     }
 }

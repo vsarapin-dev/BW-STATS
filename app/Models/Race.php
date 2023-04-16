@@ -29,4 +29,14 @@ class Race extends Model
     {
         $this->hasMany(GameStat::class, 'enemy_random_race_id', 'id');
     }
+
+    public function enemyMapRace()
+    {
+        $this->hasMany(MapRace::class, 'enemy_race_id', 'id');
+    }
+
+    public function myMapRace()
+    {
+        $this->hasMany(MapRace::class, 'my_race_id', 'id');
+    }
 }

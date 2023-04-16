@@ -10,9 +10,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GameStat extends Model
 {
-    use HasFactory, SoftDeletes, Filterable;
+    use HasFactory, Filterable;
 
     protected $table = 'game_stats';
+
+    public bool $afterCommit = true;
 
     /**
      * The attributes that are mass assignable.
@@ -35,9 +37,6 @@ class GameStat extends Model
         'result_comment',
         'global_comment',
         'is_smurf',
-        'is_leaver',
-        'is_not_calibrated',
-        'is_dropped',
     ];
 
     public function user(): BelongsTo

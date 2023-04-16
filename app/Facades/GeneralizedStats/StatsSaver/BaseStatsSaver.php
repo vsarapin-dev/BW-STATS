@@ -7,7 +7,10 @@ namespace App\Facades\GeneralizedStats\StatsSaver;
 use App\Models\BestMap;
 use App\Models\GameStat;
 use App\Models\GeneralStats;
+use App\Models\MapRace;
 use App\Models\MapWinrate;
+use App\Models\MmrMapRace;
+use App\Models\MmrWinrate;
 use App\Models\RaceWinrate;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,6 +44,9 @@ abstract class BaseStatsSaver
         BestMap::whereTotalId($this->totalTableId)->delete();
         MapWinrate::whereTotalId($this->totalTableId)->delete();
         RaceWinrate::whereTotalId($this->totalTableId)->delete();
+        MmrWinrate::whereTotalId($this->totalTableId)->delete();
+        MapRace::whereTotalId($this->totalTableId)->delete();
+        MmrMapRace::whereTotalId($this->totalTableId)->delete();
     }
 
     private function setAllVariables($seasonId, $totalTableId)

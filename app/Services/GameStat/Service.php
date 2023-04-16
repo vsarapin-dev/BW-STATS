@@ -3,7 +3,7 @@
 
 namespace App\Services\GameStat;
 
-use App\Models\MmrRank;
+use App\Models\Total;
 use GeneralizedStats;
 use App\Http\Filters\GameStatFilter;
 use App\Http\Resources\GameStat\GameStatResource;
@@ -12,6 +12,7 @@ use App\Models\GameStat;
 use App\Models\Season;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
@@ -29,9 +30,8 @@ class Service
         $lastUpdated = $gameStatLastCreatedDate ? Carbon::parse($gameStatLastCreatedDate)->format('d F Y') : null;
         $currentSeason = $seasonId ? new SeasonResource(Season::whereId($seasonId)->first()) : null;
 
-
         $gameStatDataTableResult = $this->paginate(
-            GameStatResource::collection(GameStat::whereUserId(Auth::id())->whereSeasonId($seasonId)->orderBy('game_number', 'desc')->get()),
+            GameStatResource::collection(GameStat::whereUserId(Auth::id())->whereSeasonId($seasonId)->orderBy($data['sort_by'], $data['sort_desc'])->get()),
             $data['itemsPerPage'],
             $data['page']
         );
@@ -80,9 +80,35 @@ class Service
         return response()->json(['message' => 'Row not created.']);
     }
 
-    public function delete(array $rowsIds): JsonResponse
+    public function delete(Request $request): JsonResponse
     {
-        GameStat::whereIn('id', $rowsIds)->delete();
+        $userId = Auth::id();
+        $seasonId = $request['season_id'];
+        if (isset($request['delete_all']))
+        {
+            return $this->deleteAll($userId, $seasonId);
+        }
+
+        if (isset($request['ids']))
+        {
+            return $this->deleteIds($userId, $seasonId, $request['ids']);
+        }
+    }
+
+    private function deleteAll($userId, $seasonId): JsonResponse
+    {
+        GameStat::whereUserId($userId)->whereSeasonId($seasonId)->delete();
+        $this->recalculateBestStats($userId, $seasonId);
+
+        return response()->json([
+            'message' => 'Deleted successfully'
+        ]);
+    }
+
+    private function deleteIds($userId, $seasonId, $ids): JsonResponse
+    {
+        GameStat::whereUserId($userId)->whereSeasonId($seasonId)->whereIn('id', $ids)->delete();
+        $this->recalculateBestStats($userId, $seasonId);
 
         return response()->json([
             'message' => 'Deleted successfully'
@@ -94,5 +120,23 @@ class Service
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
         return new LengthAwarePaginator($items->forPage($page, $perPage)->values(), $items->count(), $perPage, $page, $options);
+    }
+
+    private function recalculateBestStats($userId, $seasonId)
+    {
+        $gameStat = GameStat::whereUserId($userId)->whereSeasonId($seasonId)->count();
+        $totalsRow = Total::whereUserId($userId)->whereSeasonId($seasonId)->first();
+
+        if ($totalsRow != null)
+        {
+            if ($gameStat > 0)
+            {
+                GeneralizedStats::setAllBestStats($totalsRow->season_id, $totalsRow->id);
+            }
+            else
+            {
+                GeneralizedStats::deleteAllBestStats($totalsRow->id);
+            }
+        }
     }
 }

@@ -41,4 +41,14 @@ class Total extends Model
     {
         return $this->hasMany(MmrWinrate::class);
     }
+
+    public function mapRace(): HasMany
+    {
+        return $this->hasMany(MapRace::class);
+    }
+
+    public function mmrMapRace(): HasMany
+    {
+        return $this->hasMany(MmrMapRace::class);
+    }
 }

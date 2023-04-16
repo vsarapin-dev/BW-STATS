@@ -6,7 +6,9 @@ namespace App\Facades\GeneralizedStats;
 use App\Facades\GeneralizedStats\StatsSaver\BestMapsStatsSaver;
 use App\Facades\GeneralizedStats\StatsSaver\CachedStatsFactory;
 use App\Facades\GeneralizedStats\StatsSaver\GeneralStatsSaver;
+use App\Facades\GeneralizedStats\StatsSaver\MapRaceStatsSaver;
 use App\Facades\GeneralizedStats\StatsSaver\MapWinrateStatsSaver;
+use App\Facades\GeneralizedStats\StatsSaver\MmrMapRaceStatsSaver;
 use App\Facades\GeneralizedStats\StatsSaver\MmrWinrateSaver;
 use App\Facades\GeneralizedStats\StatsSaver\RaceWinrateStatsSaver;
 use App\Http\Resources\Total\TotalResource;
@@ -29,12 +31,21 @@ class GeneralizedStats
         $mapWinrateStatsSaver = $cachedStatsFactory->createObject(MapWinrateStatsSaver::class);
         $raceWinrate = $cachedStatsFactory->createObject(RaceWinrateStatsSaver::class);
         $mmrWinrate = $cachedStatsFactory->createObject(MmrWinrateSaver::class);
+        $mapRace = $cachedStatsFactory->createObject(MapRaceStatsSaver::class);
+        $mmrMapRace = $cachedStatsFactory->createObject(MmrMapRaceStatsSaver::class);
 
         $generalStatsSaver->computeAndSaveData();
         $bestMapsStatsSaver->computeAndSaveData();
         $mapWinrateStatsSaver->computeAndSaveData();
         $raceWinrate->computeAndSaveData();
         $mmrWinrate->computeAndSaveData();
+        $mapRace->computeAndSaveData();
+        $mmrMapRace->computeAndSaveData();
+    }
+
+    public function deleteAllBestStats($totalTableId)
+    {
+        Total::whereId($totalTableId)->delete();
     }
 
 

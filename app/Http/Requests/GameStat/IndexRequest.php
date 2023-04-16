@@ -27,6 +27,8 @@ class IndexRequest extends FormRequest
             'page' => 'nullable|integer',
             'itemsPerPage' => 'nullable|integer',
             'season_id' => 'nullable|exists:seasons,id',
+            'sort_by' => 'required',
+            'sort_desc' => 'required',
         ];
     }
 }
