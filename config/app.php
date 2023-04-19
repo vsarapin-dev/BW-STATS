@@ -193,6 +193,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'GeneralizedStats' => \App\Facades\GeneralizedStats\Facade\GeneralizedStatsFacade::class,
+        'Redis' => Illuminate\Support\Facades\Redis::class,
     ])->toArray(),
 
 ];
