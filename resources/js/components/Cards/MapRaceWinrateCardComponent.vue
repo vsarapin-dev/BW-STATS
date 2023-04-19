@@ -1,5 +1,5 @@
 <template>
-    <v-card v-if="mapRaceWinrate" tile class="mt-10" width="100%">
+    <v-card v-if="mapRaceWinrate" tile class="mt-10 custom-elevation-2" width="100%">
         <v-toolbar dark dense color="teal" class="d-flex justify-center">
             <v-toolbar-title>Map Race Winrates</v-toolbar-title>
         </v-toolbar>

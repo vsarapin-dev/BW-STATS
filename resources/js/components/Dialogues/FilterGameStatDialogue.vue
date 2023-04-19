@@ -7,7 +7,7 @@
         >
             <v-card>
                 <v-card-title>
-                    <span class="text-h5 ml-3">Filter</span>
+                    <span class="text-h5 ml-3">Filters</span>
                 </v-card-title>
                 <v-card-text>
                     <v-container>
@@ -26,10 +26,12 @@
                         </v-row>
                         <v-row>
                             <v-col cols="12" xs="12" md="6">
-                                <v-text-field label="Enemy current MMR" dense type="number" v-model="enemyCurrentMmr"></v-text-field>
+                                <v-text-field label="From MMR" dense type="number"
+                                              v-model="enemyMinMmr"></v-text-field>
                             </v-col>
                             <v-col cols="12" xs="12" md="6">
-                                <v-text-field label="Enemy best MMR" dense type="number" v-model="enemyBestMmr"></v-text-field>
+                                <v-text-field label="To MMR" dense type="number"
+                                              v-model="enemyMaxMmr"></v-text-field>
                             </v-col>
                         </v-row>
                         <v-row>
@@ -200,8 +202,8 @@ export default {
         return {
             findNicknameLoader: false,
             findLoginLoader: false,
-            enemyCurrentMmr: 0,
-            enemyBestMmr: 0,
+            enemyMinMmr: 0,
+            enemyMaxMmr: 0,
             resultComment: '',
             enemyLoginSearch: '',
             globalComment: '',
@@ -225,7 +227,7 @@ export default {
         }
     },
     watch: {
-        enemyLoginSearch (val) {
+        enemyLoginSearch(val) {
             this.findLoginLoader = true;
             this.getLogin(val);
         },
@@ -267,7 +269,8 @@ export default {
                 }
                 return false;
             },
-            set(value) {},
+            set(value) {
+            },
         },
     },
     methods: {
@@ -276,19 +279,19 @@ export default {
                 enemy_login: value,
                 season_id: this.season,
             })
-            .then(res => {
-                this.findLoginLoader = false;
-                this.enemyLogins = res.data.enemy_logins;
-            })
-            .catch(e => {
-                this.findLoginLoader = false;
-                console.log(e.response);
-            })
+                .then(res => {
+                    this.findLoginLoader = false;
+                    this.enemyLogins = res.data.enemy_logins;
+                })
+                .catch(e => {
+                    this.findLoginLoader = false;
+                    console.log(e.response);
+                })
         },
         filterStats() {
-            this.$parent.filterData({
-                enemy_current_mmr: this.enemyCurrentMmr,
-                enemy_max_mmr: this.enemyBestMmr,
+            let data = {
+                enemy_min_mmr: this.enemyMinMmr,
+                enemy_max_mmr: this.enemyMaxMmr,
                 enemy_login: this.enemyLogin,
                 map_id: this.mapSelected,
                 result_comment: this.resultComment,
@@ -297,8 +300,38 @@ export default {
                 my_race_id: this.myRaceSelected,
                 enemy_random_race_id: this.enemyRandomRaceSelected,
                 enemy_race_id: this.enemyRaceSelected,
-            });
+            };
+
+            data = this.removeEmptyOnFilteredData(data);
+            data = this.checkForZerosInMmrFilter(data);
+            data = this.convertMmrToNumbers(data);
+            this.$parent.filteredDataObject(data);
             this.show = false;
+        },
+        removeEmptyOnFilteredData(data) {
+            let resData = {};
+            for (const [key, value] of Object.entries(data)) {
+                if (value !== null && value !== "")
+                {
+                    resData[key] = value;
+                }
+            }
+            return resData;
+        },
+        checkForZerosInMmrFilter(data)
+        {
+            if (data.enemy_max_mmr === 0)
+            {
+                data.enemy_max_mmr = 10000;
+            }
+            return data;
+        },
+        convertMmrToNumbers(data)
+        {
+            data.enemy_min_mmr = Number(data.enemy_min_mmr);
+            data.enemy_max_mmr = Number(data.enemy_max_mmr);
+
+            return data;
         },
         getResultsFilters() {
             API.post('/api/auth/filters/results')
@@ -330,8 +363,8 @@ export default {
         },
         resetValues() {
             this.enemyLoginSearch = '';
-            this.enemyCurrentMmr = 0;
-            this.enemyBestMmr = 0;
+            this.enemyMinMmr = 0;
+            this.enemyMaxMmr = 0;
             this.enemyLogin = '';
             this.resultComment = '';
             this.globalComment = '';
@@ -352,10 +385,11 @@ export default {
 </script>
 
 <style scoped>
->>>.v-list-item__title{
+>>> .v-list-item__title {
     font-size: 12px !important;
 }
->>>.v-select__selections{
+
+>>> .v-select__selections {
     font-size: 12px !important;
 }
 </style>

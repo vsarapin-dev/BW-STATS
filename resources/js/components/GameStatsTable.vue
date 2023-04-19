@@ -74,16 +74,33 @@
             class="mt-10 justify-center elevation-1"
         >
 
-            <template v-slot:header.game_number="{ header }"><span style="cursor: pointer" @click="customSort('game_number')">Game #</span></template>
-            <template v-slot:header.map="{ header }"><span style="cursor: pointer" @click="customSort('map')">Map</span></template>
-            <template v-slot:header.matchup="{ header }"><span style="cursor: pointer" @click="customSort('matchup')">Matchup</span></template>
-            <template v-slot:header.enemy_current_mmr="{ header }"><span style="cursor: pointer" @click="customSort('enemy_current_mmr')">Enemy current mmr</span></template>
-            <template v-slot:header.enemy_max_mmr="{ header }"><span style="cursor: pointer" @click="customSort('enemy_max_mmr')">Enemy max mmr</span></template>
-            <template v-slot:header.result="{ header }"><span style="cursor: pointer" @click="customSort('result')">Result</span></template>
-            <template v-slot:header.result_comment="{ header }"><span style="cursor: pointer" @click="customSort('result_comment')">Result comment</span></template>
-            <template v-slot:header.enemy_nickname="{ header }"><span style="cursor: pointer" @click="customSort('enemy_nickname')">Enemy nickname</span></template>
-            <template v-slot:header.enemy_login="{ header }"><span style="cursor: pointer" @click="customSort('enemy_login')">Enemy login</span></template>
-            <template v-slot:header.global_comment="{ header }"><span style="cursor: pointer" @click="customSort('global_comment')">Global Comment</span></template>
+            <template v-slot:header.game_number="{ header }"><span style="cursor: pointer"
+                                                                   @click="customSort('game_number')">Game #</span>
+            </template>
+            <template v-slot:header.map="{ header }"><span style="cursor: pointer" @click="customSort('map')">Map</span>
+            </template>
+            <template v-slot:header.matchup="{ header }"><span style="cursor: pointer" @click="customSort('matchup')">Matchup</span>
+            </template>
+            <template v-slot:header.enemy_current_mmr="{ header }"><span style="cursor: pointer"
+                                                                         @click="customSort('enemy_current_mmr')">Enemy current mmr</span>
+            </template>
+            <template v-slot:header.enemy_max_mmr="{ header }"><span style="cursor: pointer"
+                                                                     @click="customSort('enemy_max_mmr')">Enemy max mmr</span>
+            </template>
+            <template v-slot:header.result="{ header }"><span style="cursor: pointer" @click="customSort('result')">Result</span>
+            </template>
+            <template v-slot:header.result_comment="{ header }"><span style="cursor: pointer"
+                                                                      @click="customSort('result_comment')">Result comment</span>
+            </template>
+            <template v-slot:header.enemy_nickname="{ header }"><span style="cursor: pointer"
+                                                                      @click="customSort('enemy_nickname')">Enemy nickname</span>
+            </template>
+            <template v-slot:header.enemy_login="{ header }"><span style="cursor: pointer"
+                                                                   @click="customSort('enemy_login')">Enemy login</span>
+            </template>
+            <template v-slot:header.global_comment="{ header }"><span style="cursor: pointer"
+                                                                      @click="customSort('global_comment')">Global Comment</span>
+            </template>
             <template v-slot:header.data-table-select>
                 <v-checkbox
                     v-model="allRowsSelected"
@@ -140,6 +157,16 @@
                                         </template>
                                     </v-select>
                                 </div>
+                                <v-btn
+                                    small
+                                    class="ml-3"
+                                    color="error"
+                                    height="40"
+                                    width="95"
+                                    @click="resetAll"
+                                >
+                                    Reset all
+                                </v-btn>
                             </div>
                         </v-col>
                         <v-col class="d-flex justify-end">
@@ -222,7 +249,7 @@ export default {
     },
     data() {
         return {
-            options: {},
+            filterValues: {},
             sortBy: 'game_number',
             sortDesc: true,
             sortDescString: 'desc',
@@ -267,14 +294,12 @@ export default {
     },
     watch: {
         selectedToDelete(value) {
-            if (value.length > 0)
-            {
+            if (value.length > 0) {
                 this.allRowsSelected = false;
             }
         },
         allRowsSelected(value) {
-            if (value === true)
-            {
+            if (value === true) {
                 this.selectedToDelete = [];
             }
         },
@@ -297,11 +322,16 @@ export default {
             if (column === 'matchup')
                 this.sortBy = 'enemy_race_id';
 
-
-            this.getData();
+            if (Object.keys(this.filterValues).length > 0) {
+                this.filterValues.sort_by = this.sortBy;
+                this.filterValues.sort_desc = this.sortDescString;
+                this.filterData();
+            } else {
+                this.getData();
+            }
             return this.stats;
         },
-        editItem (item) {
+        editItem(item) {
             this.editedIndex = this.stats.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.shouldUpdateRow = true;
@@ -328,8 +358,28 @@ export default {
                     return 'white';
             }
         },
-        filterData(valuesToFilter) {
-            console.log(valuesToFilter);
+        filteredDataObject(valuesToFilter) {
+            valuesToFilter.page = this.page;
+            valuesToFilter.itemsPerPage = this.itemsPerPage;
+            valuesToFilter.season_id = this.selectedSeason;
+            valuesToFilter.sort_by = this.sortBy;
+            valuesToFilter.sort_desc = this.sortDescString;
+
+            this.filterValues = valuesToFilter;
+            this.filterData();
+        },
+        filterData() {
+            this.loadingData = true;
+            API.post('/api/auth/filter', this.filterValues)
+                .then(res => {
+                    this.stats = res.data.data.data;
+                    this.setPageVariables(res.data.data);
+                    this.loadingData = false;
+                })
+                .catch(e => {
+                    console.log(e.response);
+                    this.loadingData = false;
+                })
         },
         deleteData() {
             if (window.confirm("Are you sure want to delete this rows?")) {
@@ -374,6 +424,7 @@ export default {
                 sort_desc: this.sortDescString,
                 itemsPerPage: this.itemsPerPage,
                 season_id: this.selectedSeason,
+                ...this.filterValues,
             })
                 .then(res => {
                     if (res.data.hasOwnProperty('mapWinrate'))
@@ -399,8 +450,7 @@ export default {
                         res.data.availableSeasons !== null &&
                         res.data.currentSeason !== null &&
                         res.data.lastUpdated !== null &&
-                        res.data.bestMaps !== null)
-                    {
+                        res.data.bestMaps !== null) {
                         this.bestMaps = res.data.bestMaps;
                         this.lastUpdatedAtDate = res.data.lastUpdated;
                         this.stats = res.data.data.data;
@@ -418,6 +468,15 @@ export default {
                     this.loadingData = false;
                     console.log(e.response)
                 })
+        },
+        resetAll() {
+            this.resetVariables();
+            this.filterValues = {};
+            this.page = 0;
+            this.sortBy = 'game_number';
+            this.sortDesc = true;
+            this.sortDescString = 'desc';
+            this.getData();
         },
         storeData(data) {
             API.post('/api/auth/store-stats', {
@@ -440,13 +499,23 @@ export default {
             }, 70)
         },
         changeSeason() {
-            this.getData();
+            if (Object.keys(this.filterValues).length > 0) {
+                this.filterValues.season_id = this.selectedSeason;
+                this.filterData();
+            } else {
+                this.getData();
+            }
             this.page = 0;
             this.updatePanel();
         },
         pageChanged(page) {
             this.page = page;
-            this.getData();
+            if (Object.keys(this.filterValues).length > 0) {
+                this.filterValues.page = this.page;
+                this.filterData();
+            } else {
+                this.getData();
+            }
         },
         setPageVariables(meta) {
             this.page = meta.current_page;
@@ -471,3 +540,7 @@ export default {
     }
 }
 </script>
+
+<style>
+
+</style>

@@ -59,7 +59,7 @@ class Service
         );
 
         return response()->json([
-            'gameStatFilterResult' => $gameStatFilterResult,
+            'data' => $gameStatFilterResult,
         ]);
     }
 

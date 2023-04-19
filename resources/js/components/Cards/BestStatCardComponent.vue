@@ -1,5 +1,5 @@
 <template>
-    <v-card v-if="allResults" class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '250'">
+    <v-card v-if="allResults" class="custom-elevation-2 mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '250'">
         <v-container>
             <v-row>
                 <v-col sm="4">

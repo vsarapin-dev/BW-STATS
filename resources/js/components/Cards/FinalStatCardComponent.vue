@@ -1,5 +1,5 @@
 <template>
-    <v-card v-if="finalResults.percents && finalResults.maxStreaks" class="mt-10"
+    <v-card v-if="finalResults.percents && finalResults.maxStreaks" class="mt-10 custom-elevation-2"
             :width="$vuetify.breakpoint.xs ? '100%' : '550'">
         <SnackBar :visible="showSnackBar" :message="message" @close="showSnackBar = false"/>
         <v-container>

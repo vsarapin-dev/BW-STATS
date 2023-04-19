@@ -1,5 +1,5 @@
 <template>
-    <v-card v-if="raceWinrate" tile class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '250'" height="450">
+    <v-card v-if="raceWinrate" tile class="mt-10 custom-elevation-2" :width="$vuetify.breakpoint.xs ? '100%' : '250'" height="450">
         <v-toolbar
             dark
             dense

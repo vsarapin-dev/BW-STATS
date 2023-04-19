@@ -5,6 +5,7 @@ namespace App\Http\Filters;
 
 
 use Illuminate\Database\Eloquent\Builder;
+use phpDocumentor\Reflection\Types\Array_;
 
 class GameStatFilter extends AbstractFilter
 {
@@ -22,9 +23,6 @@ class GameStatFilter extends AbstractFilter
     public const ENEMY_CURRENT_MMR = 'enemy_current_mmr';
     public const ENEMY_MAX_MMR = 'enemy_max_mmr';
     public const IS_SMURF = 'is_smurf';
-    public const IS_LEAVER = 'is_leaver';
-    public const IS_NOT_CALIBRATED = 'is_not_calibrated';
-    public const IS_DROPPED = 'is_dropped';
 
 
     protected function getCallbacks(): array
@@ -44,9 +42,6 @@ class GameStatFilter extends AbstractFilter
             self::ENEMY_CURRENT_MMR => [$this, 'enemyCurrentMmr'],
             self::ENEMY_MAX_MMR => [$this, 'enemyMaxMmr'],
             self::IS_SMURF => [$this, 'isSmurf'],
-            self::IS_LEAVER => [$this, 'isLeaver'],
-            self::IS_NOT_CALIBRATED => [$this, 'isNotCalibrated'],
-            self::IS_DROPPED => [$this, 'isDropped'],
         ];
     }
 
@@ -107,26 +102,11 @@ class GameStatFilter extends AbstractFilter
 
     public function resultId(Builder $builder, $value)
     {
-        $builder->whereIn('result_id', $value);
+        $builder->whereIn('result_id', !is_array($value) ? [$value] : $value);
     }
 
     public function isSmurf(Builder $builder, $value)
     {
         $builder->where('is_smurf', $value);
-    }
-
-    public function isLeaver(Builder $builder, $value)
-    {
-        $builder->where('is_leaver', $value);
-    }
-
-    public function isNotCalibrated(Builder $builder, $value)
-    {
-        $builder->where('is_not_calibrated', $value);
-    }
-
-    public function isDropped(Builder $builder, $value)
-    {
-        $builder->where('is_dropped', $value);
     }
 }

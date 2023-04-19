@@ -1,5 +1,5 @@
 <template>
-    <v-card v-if="generalStats" tile class="mt-10" :width="$vuetify.breakpoint.xs ? '100%' : '270'">
+    <v-card v-if="generalStats" tile class="mt-10 custom-elevation-2" :width="$vuetify.breakpoint.xs ? '100%' : '270'">
         <v-toolbar
             dark
             dense
