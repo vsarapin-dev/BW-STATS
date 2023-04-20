@@ -14,16 +14,17 @@
         "@vitejs/plugin-vue": "^4.0.0",
         "axios": "^0.25",
         "bootstrap": "^5.2.3",
+        "laravel-echo": "^1.15.0",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
         "postcss": "^8.1.14",
+        "pusher-js": "^8.0.2",
         "sass": "^1.56.1",
         "vue-loader": "^15.9.8",
         "vue-template-compiler": "^2.7.14"
     },
     "dependencies": {
         "@mdi/font": "^7.2.96",
-        "laravel-echo-server": "^1.6.3",
         "vue": "^2.7.14",
         "vue-excel-editor": "^1.4.1",
         "vue-loaders": "^4.1.4",

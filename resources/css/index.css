@@ -27,3 +27,10 @@ input[type=password]::-webkit-credentials-auto-fill-button{
     display: none !important;
     pointer-events: none;
 }
+
+.chat-btn {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+}

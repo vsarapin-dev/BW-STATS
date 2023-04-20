@@ -30,25 +30,10 @@ input[type=password]::-webkit-credentials-auto-fill-button{
     pointer-events: none;
 }
 
-.custom-elevation-2 {
-    box-shadow: 0 4px 2px -3px rgba(220, 220, 220, 1), 0 3px 3px 0 rgba(220, 220, 220, 1), 0 2px 6px 0 rgba(220, 220, 220, 1);
-    animation: blink-shadow 4s ease-in-out infinite;
+.chat-btn {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
 }
 
-@keyframes blink-shadow {
-    0% {
-        box-shadow: 0 4px 2px -3px rgba(220, 220, 220, 1),
-        0 3px 3px 0 rgba(220, 220, 220, 1),
-        0 2px 6px 0 rgba(220, 220, 220, 1);
-    }
-    50% {
-        box-shadow: 0 4px 2px -3px rgba(110, 110, 110, 1),
-        0 3px 3px 0 rgba(110, 110, 110, 1),
-        0 2px 6px 0 rgba(110, 110, 110, 1);
-    }
-    100% {
-        box-shadow: 0 4px 2px -3px rgba(220, 220, 220, 1),
-        0 3px 3px 0 rgba(220, 220, 220, 1),
-        0 2px 6px 0 rgba(220, 220, 220, 1);
-    }
-}

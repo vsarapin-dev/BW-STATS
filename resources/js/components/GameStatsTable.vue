@@ -1,6 +1,20 @@
 <template>
     <div>
         <Loader v-if="loadingData"/>
+<!--        <v-btn-->
+<!--            class="chat-btn"-->
+<!--            color="success"-->
+<!--            fab-->
+<!--            medium-->
+<!--            dark-->
+<!--            @click="chatIsOpened = !chatIsOpened"-->
+<!--        >-->
+<!--            <v-icon>mdi-message-fast-outline</v-icon>-->
+<!--        </v-btn>-->
+<!--        <ChatComponent-->
+<!--            v-if="chatIsOpened"-->
+<!--            @close="chatIsOpened = false"-->
+<!--        />-->
         <CreateNewGameStatRowDialogue
             ref="createNewGameStatRowDialogue"
             :visible="isOpenedCreateNewDialog"
@@ -230,6 +244,7 @@ import RaceWinrateCardComponent from "./Cards/RaceWinrateCardComponent";
 import MmrWinrateCardComponent from "./Cards/MmrWinrateCardComponent";
 import MapRaceWinrateCardComponent from "./Cards/MapRaceWinrateCardComponent";
 import MmrMapRaceWinrateCardComponent from "./Cards/MmrMapRaceWinrateCardComponent";
+import ChatComponent from "./Chat/ChatComponent";
 import Loader from "./Loader";
 
 export default {
@@ -246,6 +261,7 @@ export default {
         MapRaceWinrateCardComponent,
         MmrWinrateCardComponent,
         MmrMapRaceWinrateCardComponent,
+        ChatComponent,
     },
     data() {
         return {
@@ -260,6 +276,7 @@ export default {
             totalRowsFoundInDB: 0,
             totalVisible: 7,
             loadingData: false,
+            chatIsOpened: false,
             shouldUpdateRow: false,
             allRowsSelected: false,
             isOpenedCreateNewDialog: false,
