@@ -328,8 +328,7 @@ export default {
         },
         convertMmrToNumbers(data)
         {
-            data.enemy_min_mmr = Number(data.enemy_min_mmr);
-            data.enemy_max_mmr = Number(data.enemy_max_mmr);
+            data.enemy_mmr_between = [Number(data.enemy_min_mmr), Number(data.enemy_max_mmr)];
 
             return data;
         },

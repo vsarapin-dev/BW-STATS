@@ -25,8 +25,7 @@ class FilterRequest extends FormRequest
     {
         return [
             'enemy_login' => 'nullable|exists:game_stats,enemy_login',
-            'enemy_max_mmr' => 'nullable|integer',
-            'enemy_min_mmr' => 'nullable|integer',
+            'enemy_mmr_between' => 'required|array',
             'enemy_race_id' => 'nullable|exists:races,id',
             'enemy_random_race_id' => 'nullable|exists:races,id',
             'global_comment' => 'nullable|exists:game_stats,global_comment',

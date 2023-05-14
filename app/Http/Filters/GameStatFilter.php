@@ -20,8 +20,7 @@ class GameStatFilter extends AbstractFilter
     public const GAME_NUMBER = 'game_number';
     public const ENEMY_NICKNAME = 'enemy_nickname';
     public const ENEMY_LOGIN = 'enemy_login';
-    public const ENEMY_CURRENT_MMR = 'enemy_current_mmr';
-    public const ENEMY_MAX_MMR = 'enemy_max_mmr';
+    public const ENEMY_MMR_BETWEEN = 'enemy_mmr_between';
     public const IS_SMURF = 'is_smurf';
 
 
@@ -39,8 +38,7 @@ class GameStatFilter extends AbstractFilter
             self::MY_RACE_ID => [$this, 'myRaceId'],
             self::ENEMY_RANDOM_RACE_ID => [$this, 'enemyRandomRaceId'],
             self::ENEMY_RACE_ID => [$this, 'enemyRaceId'],
-            self::ENEMY_CURRENT_MMR => [$this, 'enemyCurrentMmr'],
-            self::ENEMY_MAX_MMR => [$this, 'enemyMaxMmr'],
+            self::ENEMY_MMR_BETWEEN => [$this, 'enemyMmrBetween'],
             self::IS_SMURF => [$this, 'isSmurf'],
         ];
     }
@@ -51,9 +49,9 @@ class GameStatFilter extends AbstractFilter
     }
 
     public function gameNumber(Builder $builder, $value)
-        {
-            $builder->where('game_number', $value);
-        }
+    {
+        $builder->where('game_number', $value);
+    }
 
     public function enemyRandomRaceId(Builder $builder, $value)
     {
@@ -90,14 +88,9 @@ class GameStatFilter extends AbstractFilter
         $builder->whereIn('enemy_race', $value);
     }
 
-    public function enemyCurrentMmr(Builder $builder, $value)
+    public function enemyMmrBetween(Builder $builder, $value)
     {
-        $builder->where('enemy_current_mmr', $value);
-    }
-
-    public function enemyMaxMmr(Builder $builder, $value)
-    {
-        $builder->where('enemy_max_mmr', $value);
+        $builder->whereBetween('enemy_max_mmr', $value);
     }
 
     public function resultId(Builder $builder, $value)

@@ -266,6 +266,7 @@ export default {
     data() {
         return {
             filterValues: {},
+            filterIsActiveNow: false,
             sortBy: 'game_number',
             sortDesc: true,
             sortDescString: 'desc',
@@ -339,21 +340,14 @@ export default {
             if (column === 'matchup')
                 this.sortBy = 'enemy_race_id';
 
-            if (Object.keys(this.filterValues).length > 0) {
-                this.filterValues.sort_by = this.sortBy;
-                this.filterValues.sort_desc = this.sortDescString;
-                this.filterData();
-            } else {
-                this.getData();
-            }
-            return this.stats;
+             this.getData();
+             return this.stats;
         },
         editItem(item) {
             this.editedIndex = this.stats.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.shouldUpdateRow = true;
             this.openCreateNewOrEditDialog('Edit game');
-            console.log("EDIT")
         },
         openCreateNewOrEditDialog(headerText) {
             this.createEditHeaderName = headerText;
@@ -376,27 +370,19 @@ export default {
             }
         },
         filteredDataObject(valuesToFilter) {
-            valuesToFilter.page = this.page;
+            if (this.filterIsActiveNow === false) {
+                this.filterIsActiveNow = true;
+                valuesToFilter.page = 1;
+            } else {
+                valuesToFilter.page = this.page;
+            }
             valuesToFilter.itemsPerPage = this.itemsPerPage;
             valuesToFilter.season_id = this.selectedSeason;
             valuesToFilter.sort_by = this.sortBy;
             valuesToFilter.sort_desc = this.sortDescString;
 
             this.filterValues = valuesToFilter;
-            this.filterData();
-        },
-        filterData() {
-            this.loadingData = true;
-            API.post('/api/auth/filter', this.filterValues)
-                .then(res => {
-                    this.stats = res.data.data.data;
-                    this.setPageVariables(res.data.data);
-                    this.loadingData = false;
-                })
-                .catch(e => {
-                    console.log(e.response);
-                    this.loadingData = false;
-                })
+            this.getData();
         },
         deleteData() {
             if (window.confirm("Are you sure want to delete this rows?")) {
@@ -433,9 +419,15 @@ export default {
             }
         },
         getData() {
+            let url = Object.keys(this.filterValues).length > 0 ?
+                '/api/auth/filter' :
+                '/api/auth/index';
+
             this.loadingData = true;
             this.resetVariables();
-            API.post('/api/auth/index', {
+            this.updatePanel();
+
+            API.post(url, {
                 page: this.page,
                 sort_by: this.sortBy,
                 sort_desc: this.sortDescString,
@@ -467,7 +459,8 @@ export default {
                         res.data.availableSeasons !== null &&
                         res.data.currentSeason !== null &&
                         res.data.lastUpdated !== null &&
-                        res.data.bestMaps !== null) {
+                        res.data.bestMaps !== null)
+                    {
                         this.bestMaps = res.data.bestMaps;
                         this.lastUpdatedAtDate = res.data.lastUpdated;
                         this.stats = res.data.data.data;
@@ -476,8 +469,15 @@ export default {
                         this.selectedSeason = res.data.currentSeason.id;
                         this.totalRowsFoundInDB = res.data.data.total;
                         this.setPageVariables(res.data.data);
-
                     }
+                    else if (res.data.hasOwnProperty('data'))
+                    {
+                        this.stats = res.data.data.data;
+                        this.generalStats = res.data.generalStats;
+                        this.totalRowsFoundInDB = res.data.data.total;
+                        this.setPageVariables(res.data.data);
+                    }
+
                     this.loadingData = false;
                     console.log(res.data)
                 })
@@ -516,23 +516,12 @@ export default {
             }, 70)
         },
         changeSeason() {
-            if (Object.keys(this.filterValues).length > 0) {
-                this.filterValues.season_id = this.selectedSeason;
-                this.filterData();
-            } else {
-                this.getData();
-            }
+            this.getData();
             this.page = 0;
-            this.updatePanel();
         },
         pageChanged(page) {
             this.page = page;
-            if (Object.keys(this.filterValues).length > 0) {
-                this.filterValues.page = this.page;
-                this.filterData();
-            } else {
-                this.getData();
-            }
+            this.getData();
         },
         setPageVariables(meta) {
             this.page = meta.current_page;
@@ -540,9 +529,10 @@ export default {
         },
         resetVariables() {
             this.seasons = null;
-            this.selectedSeason = null;
+            //this.selectedSeason = null;
             this.totalRowsFoundInDB = null;
             this.allRowsSelected = false;
+            this.filterIsActiveNow = false;
             this.mmrWinrate = null;
             this.mmrMapRaceWinrate = null;
             this.mapWinrate = null;
