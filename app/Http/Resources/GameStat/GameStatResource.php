@@ -3,6 +3,7 @@
 namespace App\Http\Resources\GameStat;
 
 use App\Http\Resources\Season\SeasonResource;
+use App\Models\GameStat;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class GameStatResource extends JsonResource
@@ -31,6 +32,7 @@ class GameStatResource extends JsonResource
             'enemy_max_mmr' => $this->enemy_max_mmr,
             'result_id' => $this->result_id,
             'result' => $this->result->name,
+            'result_color' => GameStat::COLOR_MAP[$this->result->name] ?? GameStat::COLOR_RESULT_DEFAULT,
             'result_comment' => $this->result_comment,
             'global_comment' => $this->global_comment,
             'is_smurf' => $this->is_smurf,

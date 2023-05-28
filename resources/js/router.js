@@ -2,8 +2,8 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Login from "./components/Auth/Login"
 import Registration from "./components/Auth/Registration"
-import GameStatsTable from "./components/GameStatsTable"
-import ExcelImport from "./components/ExcelImport"
+import GameStatsTable from "./components/BroodWar/DataTables/GameStatsTable"
+import ExcelImport from "./components/BroodWar/ExcelImport"
 
 const router = new VueRouter({
     mode: 'history',

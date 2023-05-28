@@ -17,11 +17,6 @@ use Illuminate\Support\Facades\Auth;
 
 class GeneralizedStats
 {
-    public function getAllBestStats($seasonId)
-    {
-        return new TotalResource(Total::whereUserId(Auth::id())->whereSeasonId($seasonId)->first());
-    }
-
     public function setAllBestStats($seasonId, $totalTableId)
     {
         $cachedStatsFactory = new CachedStatsFactory($seasonId, $totalTableId);

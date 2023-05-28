@@ -11,7 +11,7 @@
     },
     "devDependencies": {
         "@popperjs/core": "^2.11.6",
-        "@vitejs/plugin-vue": "^4.0.0",
+        "@vitejs/plugin-vue": "^4.2.3",
         "axios": "^0.25",
         "bootstrap": "^5.2.3",
         "laravel-echo": "^1.15.0",
@@ -25,10 +25,12 @@
     },
     "dependencies": {
         "@mdi/font": "^7.2.96",
+        "@sentry/vue": "^7.40.0",
+        "animejs": "^3.2.1",
         "vue": "^2.7.14",
         "vue-excel-editor": "^1.4.1",
-        "vue-loaders": "^4.1.4",
         "vue-router": "^3.6.5",
-        "vuetify": "^2.6.14"
+        "vuetify": "^2.6.14",
+        "vuex": "^3.6.2"
     }
 }

@@ -34,3 +34,11 @@ input[type=password]::-webkit-credentials-auto-fill-button{
     right: 20px !important;
     z-index: 9999 !important;
 }
+@font-face {
+    font-family: "Courier";
+    src: url('./../../public/fonts/custom/Courier.ttf');
+}
+
+.v-application {
+    font-family: "Courier", sans-serif !important;
+}

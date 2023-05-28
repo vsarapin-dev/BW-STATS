@@ -1,5 +1,8 @@
 <template>
     <v-app class="fill-height" data-app>
+        <Loader v-if="$store.getters['loading/loading']" />
+        <SnackBar></SnackBar>
+
         <v-navigation-drawer
             v-if="access_token"
             v-model="drawer"
@@ -52,11 +55,31 @@
         <v-footer app>
             <!-- -->
         </v-footer>
+
+        <CreateNewGameStatRowDialogue
+            ref="createNewGameStatRowDialogue"
+            :visible="isOpenedCreateNewDialog"
+            :headerName="$store.getters['dialogues/dialogHeaderName']"
+            :updateRow="$store.getters['dialogues/shouldUpdateTableRow']"
+            @close="isOpenedCreateNewDialog = false; shouldUpdateRow = false"
+        />
+        <FilterGameStartDialog
+            :filterVisible="isOpenedFilterDialog"
+            :seasonId="$store.getters['seasons/selectedSeason']"
+            @close="isOpenedFilterDialog = false"
+        />
+
+
     </v-app>
 </template>
 
 <script>
 import API from "../api";
+import Loader from "./Common/Loader";
+import SnackBar from "./Common/SnackBar";
+import anime from 'animejs';
+import CreateNewGameStatRowDialogue from "./BroodWar/Dialogues/CreateNewGameStatRowDialogue";
+import FilterGameStartDialog from "./BroodWar/Dialogues/FilterGameStatDialogue";
 
 export default {
     name: "Index",
@@ -71,11 +94,58 @@ export default {
             ],
         }
     },
+    components: {
+        Loader,
+        SnackBar,
+        CreateNewGameStatRowDialogue,
+        FilterGameStartDialog,
+    },
     mounted() {
         this.getLogin();
         this.getToken();
+        this.animateDrawer();
+    },
+    watch: {
+        drawer(value) {
+            this.animateDrawer(); // Запуск анимации при изменении значения drawer
+        },
+    },
+    computed: {
+        isOpenedCreateNewDialog: {
+            get() { return this.$store.getters['dialogues/isOpenedCreateNewDialog'] },
+            set(value) { this.$store.commit('dialogues/SET_CREATE_NEW_DIALOG_VISIBILITY', value) },
+        },
+        isOpenedFilterDialog: {
+            get() { return this.$store.getters['dialogues/isOpenedFilterDialog'] },
+            set(value) { this.$store.commit('dialogues/SET_FILTER_DIALOG_VISIBILITY', value) },
+        },
     },
     methods: {
+        animateDrawer() {
+            this.$nextTick(() => {
+                const drawerContent = this.$el.querySelector('.v-navigation-drawer__content');
+
+                if (this.drawer) {
+                    // Показать выдвигающееся меню
+                    anime({
+                        targets: drawerContent,
+                        translateX: 0,
+                        duration: 500,
+                        easing: 'easeOutQuad',
+                        autoplay: true,
+                    });
+                } else {
+                    // Скрыть выдвигающееся меню
+                    anime({
+                        targets: drawerContent,
+                        translateX: -300,
+                        duration: 500,
+                        easing: 'easeOutQuad',
+                        autoplay: true,
+                    });
+                }
+            });
+        },
         getLogin() {
             this.login = localStorage.getItem('bw_stats_login');
         },

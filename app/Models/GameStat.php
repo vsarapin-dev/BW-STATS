@@ -16,6 +16,15 @@ class GameStat extends Model
 
     public bool $afterCommit = true;
 
+    public const COLOR_RESULT_DEFAULT = 'white';
+    public const COLOR_RESULT_WIN = 'green';
+    public const COLOR_RESULT_LOSS = 'red';
+
+    public const COLOR_MAP = [
+        'W' => self::COLOR_RESULT_WIN,
+        'L' => self::COLOR_RESULT_LOSS,
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -74,7 +83,7 @@ class GameStat extends Model
         return $this->belongsTo(Race::class, 'enemy_random_race_id');
     }
 
-    public function getMatchupAttribute() : string
+    public function getMatchupAttribute(): string
     {
 
         $myRace = strtoupper($this->myRace->name[0]);

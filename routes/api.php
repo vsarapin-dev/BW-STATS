@@ -33,6 +33,17 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
             Route::post('/delete-stats', 'DeleteController')->name('delete');
         });
 
+        Route::group(['namespace' => 'Totals'], function () {
+            Route::post('/general-stats', 'TotalGeneralTotalsController')->name('stats.general');
+            Route::post('/available-seasons', 'TotalSeasonsController')->name('seasons');
+            Route::post('/best-maps', 'TotalBestMapsController')->name('best.maps');
+            Route::post('/maps-winrate', 'TotalMapWinrateController')->name('maps.winrate');
+            Route::post('/races-winrate', 'TotalRacesWinrateController')->name('races.winrate');
+            Route::post('/mmr-winrate', 'TotalMmrWinrateController')->name('mmr.winrate');
+            Route::post('/map-race', 'TotalMapRaceController')->name('map.race');
+            Route::post('/mmr-map-race', 'TotalMmrMapRaceController')->name('mmr.map.race');
+        });
+
         Route::group(['namespace' => 'Excel'], function () {
             Route::post('/import-excel-file', 'ImportController')->name('import');
         });

@@ -7,9 +7,7 @@ use App\Models\Total;
 use GeneralizedStats;
 use App\Http\Filters\GameStatFilter;
 use App\Http\Resources\GameStat\GameStatResource;
-use App\Http\Resources\Season\SeasonResource;
 use App\Models\GameStat;
-use App\Models\Season;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,28 +21,25 @@ class Service
     public function index($data): JsonResponse
     {
         $userStatQuery = GameStat::whereUserId(Auth::id());
-
-        $seasonId = $data['season_id'] ?? $userStatQuery->max('season_id');
         $gameStatLastCreatedDate = $userStatQuery->max('created_at');
-        $availableSeasons = SeasonResource::collection(Season::whereIn('id', GameStat::select('season_id')->distinct()->get()->pluck('season_id'))->get());
-        $lastUpdated = $gameStatLastCreatedDate ? Carbon::parse($gameStatLastCreatedDate)->format('d F Y') : null;
-        $currentSeason = $seasonId ? new SeasonResource(Season::whereId($seasonId)->first()) : null;
+
+        $lastUpdated = $gameStatLastCreatedDate ?
+            Carbon::parse($gameStatLastCreatedDate)->format('d F Y') :
+            null;
 
         $gameStatDataTableResult = $this->paginate(
-            GameStatResource::collection(GameStat::whereUserId(Auth::id())->whereSeasonId($seasonId)->orderBy($data['sort_by'], $data['sort_desc'])->get()),
+            GameStatResource::collection(GameStat::whereUserId(Auth::id())
+                ->whereSeasonId($data['season_id'])
+                ->orderBy($data['sort_by'], $data['sort_desc'])
+                ->get()),
             $data['itemsPerPage'],
             $data['page']
         );
 
-        $result = [
+        return response()->json([
             'data' => $gameStatDataTableResult,
-            'currentSeason' => $currentSeason,
             'lastUpdated' => $lastUpdated,
-            'availableSeasons' => $availableSeasons,
-        ];
-        $generalizedStats = $seasonId ? json_decode(GeneralizedStats::getAllBestStats($seasonId)->toJson(), true) : [];
-
-        return response()->json(array_merge_recursive($generalizedStats, $result));
+        ]);
     }
 
     public function filter($data): JsonResponse
@@ -84,13 +79,11 @@ class Service
     {
         $userId = Auth::id();
         $seasonId = $request['season_id'];
-        if (isset($request['delete_all']))
-        {
+        if (isset($request['delete_all'])) {
             return $this->deleteAll($userId, $seasonId);
         }
 
-        if (isset($request['ids']))
-        {
+        if (isset($request['ids'])) {
             return $this->deleteIds($userId, $seasonId, $request['ids']);
         }
     }
@@ -127,14 +120,10 @@ class Service
         $gameStat = GameStat::whereUserId($userId)->whereSeasonId($seasonId)->count();
         $totalsRow = Total::whereUserId($userId)->whereSeasonId($seasonId)->first();
 
-        if ($totalsRow != null)
-        {
-            if ($gameStat > 0)
-            {
+        if ($totalsRow != null) {
+            if ($gameStat > 0) {
                 GeneralizedStats::setAllBestStats($totalsRow->season_id, $totalsRow->id);
-            }
-            else
-            {
+            } else {
                 GeneralizedStats::deleteAllBestStats($totalsRow->id);
             }
         }

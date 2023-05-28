@@ -28,32 +28,6 @@ class GeneralStatsResource extends JsonResource
             'dropPercent' => $this->drop_percent,
             'drawCount' => $this->draw_count,
             'drawPercent' => $this->draw_percent,
-
-            /*'finalSeasonDataResults' => [
-                'bestMaps' => BestMapResource::collection($this->bestMaps),
-                'percents' => [
-                    'smurfPercent' => round($this->smurf_percent, 2),
-                    'woPercent' => round($this->wo_percent, 2),
-                    'randomPercent' => round($this->random_percent, 2),
-                ],
-                'maxStreaks' => [
-                    'maxWins' => $this->max_wins,
-                    'maxDefeats' => $this->max_defeats,
-                ],
-                'editableFields' => [
-                    'minSeasonMmr' => $this->min_season_mmr,
-                    'maxSeasonMmr' => $this->max_season_mmr,
-                    'finalSeasonMmr' => $this->final_season_mmr,
-                    'placementMatches' => $this->placement_matches,
-                    'seasonStarted' => $this->season_started,
-                    'seasonEnded' => $this->season_ended,
-                ],
-            ],
-            'gameStatTotalValueResult' => [
-                'total_games' => $this->total_games,
-                'general_wins' => $this->general_wins,
-                'real_wins' => $this->real_wins,
-            ],*/
         ];
     }
 }
