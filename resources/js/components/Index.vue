@@ -59,8 +59,8 @@
         <CreateNewGameStatRowDialogue
             ref="createNewGameStatRowDialogue"
             :visible="isOpenedCreateNewDialog"
-            :headerName="$store.getters['dialogues/dialogHeaderName']"
-            :updateRow="$store.getters['dialogues/shouldUpdateTableRow']"
+            :headerName="$store.getters['dialogVisibility/dialogHeaderName']"
+            :updateRow="$store.getters['dialogVisibility/shouldUpdateTableRow']"
             @close="isOpenedCreateNewDialog = false; shouldUpdateRow = false"
         />
         <FilterGameStartDialog
@@ -112,12 +112,12 @@ export default {
     },
     computed: {
         isOpenedCreateNewDialog: {
-            get() { return this.$store.getters['dialogues/isOpenedCreateNewDialog'] },
-            set(value) { this.$store.commit('dialogues/SET_CREATE_NEW_DIALOG_VISIBILITY', value) },
+            get() { return this.$store.getters['dialogVisibility/isOpenedCreateNewDialog'] },
+            set(value) { this.$store.commit('dialogVisibility/SET_CREATE_NEW_DIALOG_VISIBILITY', value) },
         },
         isOpenedFilterDialog: {
-            get() { return this.$store.getters['dialogues/isOpenedFilterDialog'] },
-            set(value) { this.$store.commit('dialogues/SET_FILTER_DIALOG_VISIBILITY', value) },
+            get() { return this.$store.getters['dialogVisibility/isOpenedFilterDialog'] },
+            set(value) { this.$store.commit('dialogVisibility/SET_FILTER_DIALOG_VISIBILITY', value) },
         },
     },
     methods: {

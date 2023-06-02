@@ -233,12 +233,12 @@ export default {
             set(value) { this.$store.commit('statistic/SET_PAGE', value) },
         },
         isOpenedCreateNewDialog: {
-            get() { return this.$store.getters['dialogues/isOpenedCreateNewDialog'] },
-            set(value) { this.$store.commit('dialogues/SET_CREATE_NEW_DIALOG_VISIBILITY', value) },
+            get() { return this.$store.getters['dialogVisibility/isOpenedCreateNewDialog'] },
+            set(value) { this.$store.commit('dialogVisibility/SET_CREATE_NEW_DIALOG_VISIBILITY', value) },
         },
         isOpenedFilterDialog: {
-            get() { return this.$store.getters['dialogues/isOpenedFilterDialog'] },
-            set(value) { this.$store.commit('dialogues/SET_FILTER_DIALOG_VISIBILITY', value) },
+            get() { return this.$store.getters['dialogVisibility/isOpenedFilterDialog'] },
+            set(value) { this.$store.commit('dialogVisibility/SET_FILTER_DIALOG_VISIBILITY', value) },
         },
         stats: {
             get() { return this.$store.getters['statistic/stats'] },
@@ -320,11 +320,11 @@ export default {
         editItem(item) {
             let editedIndex = this.$store.getters['statistic/stats'].indexOf(item);
             let editedItem = Object.assign({}, item);
-            this.$store.commit('dialogues/SET_SHOULD_UPDATE_TABLE_ROW', true);
+            this.$store.commit('dialogVisibility/SET_SHOULD_UPDATE_TABLE_ROW', true);
             this.openCreateNewOrEditDialog('Edit game');
         },
         openCreateNewOrEditDialog(headerText) {
-            this.$store.commit('dialogues/SET_DIALOG_HEADER_NAME', headerText);
+            this.$store.commit('dialogVisibility/SET_DIALOG_HEADER_NAME', headerText);
             this.isOpenedCreateNewDialog = !this.isOpenedCreateNewDialog;
         },
         openFilterDialog() {
@@ -382,20 +382,6 @@ export default {
         resetState() {
             this.$store.dispatch('resetState');
             this.loadData(null);
-        },
-        storeData(data) {
-            API.post('/api/auth/store-stats', {
-                ...data,
-                season_id: this.selectedSeason,
-            })
-                .then(res => {
-                    this.isOpenedCreateNewDialog = false;
-                    this.$store.dispatch('statistic/getData');
-                })
-                .catch(e => {
-                    this.$refs.createNewGameStatRowDialogue.showErrors(e);
-                    console.log(e.response);
-                })
         },
         changeSeason(value) {
             this.$store.commit('seasons/SET_SELECTED_SEASON', value);
