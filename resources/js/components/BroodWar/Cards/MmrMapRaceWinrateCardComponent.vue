@@ -25,9 +25,9 @@
                                 <div class="d-flex" v-for="(map, j) in rankData.maps" :key="`${rankData.maps}-${j}`">
                                     <span v-for="(matchups, i) in map" :key="`${map}-${i}`">
                                         <span v-for="(matchup, idex) in matchups" :key="`${matchup}-${idex}`"
-                                              style="display: inline-block !important; width: 150px !important; cursor: pointer" class="tooltip">
+                                              style="display: inline-block !important; width: 120px !important; cursor: pointer" class="tooltip text-sm-body-2">
                                             {{ matchup.matchupShorthand }}
-                                            <span :style="{color: getTextColor(matchup.winPercentage)}" style="cursor: pointer" class="ml-4">
+                                            <span :style="{color: getTextColor(matchup.winPercentage)}" style="cursor: pointer" class="ml-2 text-sm-body-2">
                                                 {{ matchup.winPercentage }} {{
                                                     matchup.winPercentage !== '-' ? '%' : ''
                                                 }}

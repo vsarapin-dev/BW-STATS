@@ -8,6 +8,7 @@ export default {
         sortDescString: 'desc',
         lastUpdatedAtDate: null,
         stats: [],
+        selectedToDelete: [],
         totalRowsFoundInDB: 0,
         allRowsSelected: false,
         filterIsActiveNow: false,
@@ -31,6 +32,7 @@ export default {
     }),
     getters: {
         itemsPerPage: state => state.itemsPerPage,
+        selectedToDelete: state => state.selectedToDelete,
         sortBy: state => state.sortBy,
         sortDesc: state => state.sortDesc,
         sortDescString: state => state.sortDescString,
@@ -46,6 +48,9 @@ export default {
         totalPagesPaginatorVisible: state => state.totalPagesPaginatorVisible,
     },
     mutations: {
+        SET_SELECTED_TO_DELETE(state, payload) {
+            state.selectedToDelete = payload;
+        },
         SET_TOTAL_PAGES_PAGINATOR_VISIBLE(state, payload) {
             state.totalPagesPaginatorVisible = payload;
         },
@@ -104,7 +109,7 @@ export default {
         },
     },
     actions: {
-        getData({state, commit, dispatch}, seasonId) {
+        getData({state, commit, dispatch, rootGetters}) {
             let url = '/api/auth/index';
             // let url = Object.keys(this.filterValues).length > 0 ?
             //     '/api/auth/filter' :
@@ -115,7 +120,7 @@ export default {
                 sort_by: state.sortBy,
                 sort_desc: state.sortDescString,
                 itemsPerPage: state.itemsPerPage,
-                season_id: seasonId,
+                season_id: rootGetters['selectedSeason'],
                 ...this.filterValues,
             })
                 .then(res => {
@@ -141,6 +146,35 @@ export default {
                     console.log(e.response)
                 })
         },
+        deleteData({state, commit, rootGetters}) {
+            if (window.confirm("Are you sure want to delete this rows?")) {
+                commit('loading/SET_LOADING', true, { root: true });
+
+                let ids = state.selectedToDelete.map(i => i.id);
+                commit('SET_SELECTED_TO_DELETE', []);
+
+                let data = {
+                    season_id: rootGetters['selectedSeason'],
+                };
+
+                data = state.allRowsSelected ?
+                    { ...data, delete_all: state.allRowsSelected, } :
+                    { ...data, ids: ids, };
+
+                API.post('/api/auth/delete-stats', data)
+                    .then(res => {
+                        commit('snackbar/SET_SNACKBAR_OPENED', true, { root: true });
+                        commit('snackbar/SET_MESSAGE', 'Deleted successfully', { root: true });
+                        commit('loading/SET_LOADING', false, { root: true });
+                        commit('RESET_STATE');
+                        commit('seasons/SET_SELECTED_SEASON', null, { root: true });
+                    })
+                    .catch(e => {
+                        commit('loading/SET_LOADING', false, { root: true });
+                        console.log(e.response)
+                    })
+            }
+        },
         setPageVariables({commit}, payload) {
             commit('SET_PAGE', payload.current_page);
             commit('SET_PAGE_COUNT', payload.last_page);
@@ -158,7 +192,7 @@ export default {
             if (payload.column === 'matchup')
                 commit('SET_SORT_BY', 'enemy_race_id');
 
-            dispatch('getData', payload.seasonId);
+            dispatch('getData');
         },
     }
 }

@@ -24,6 +24,7 @@ use App\Models\Season;
 use App\Models\Total;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
 class Service
@@ -39,12 +40,16 @@ class Service
     public function seasons(): JsonResponse
     {
         $seasonId = GameStat::whereUserId(Auth::id())->max('season_id');
-        $selectedSeason = new SeasonResource(Season::whereId($seasonId)->first());
 
-        if ($selectedSeason == null)
+        if ($seasonId == null)
         {
-            $selectedSeason = GameStat::whereUserId(Auth::id())->max('season_id') ?? null;
+            return response()->json([
+                'available_seasons' => null,
+                'selected_season' => null,
+            ]);
         }
+
+        $selectedSeason = new SeasonResource(Season::whereId($seasonId)->first());
 
         return response()->json([
             'available_seasons' => SeasonResource::collection(

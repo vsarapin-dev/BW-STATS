@@ -40,7 +40,10 @@ export default {
         },
         show: {
             get() { return this.$store.getters['snackbar/snackBarOpened'] },
-            set(value) { if (!value) this.$store.commit('snackbar/SET_SNACKBAR_OPENED', value) }
+            set(value) { if (!value) {
+                this.$store.commit('snackbar/SET_SNACKBAR_OPENED', value)
+                this.$store.commit('snackbar/SET_MESSAGE', 'Saved successfully');
+            } }
         }
     },
 }

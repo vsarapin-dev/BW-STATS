@@ -58,16 +58,10 @@
 
         <CreateNewGameStatRowDialogue
             ref="createNewGameStatRowDialogue"
-            :visible="isOpenedCreateNewDialog"
             :headerName="$store.getters['dialogVisibility/dialogHeaderName']"
             :updateRow="$store.getters['dialogVisibility/shouldUpdateTableRow']"
-            @close="isOpenedCreateNewDialog = false; shouldUpdateRow = false"
         />
-        <FilterGameStartDialog
-            :filterVisible="isOpenedFilterDialog"
-            :seasonId="$store.getters['seasons/selectedSeason']"
-            @close="isOpenedFilterDialog = false"
-        />
+        <FilterGameStartDialog :seasonId="$store.getters['seasons/selectedSeason']" />
 
 
     </v-app>
@@ -108,16 +102,6 @@ export default {
     watch: {
         drawer(value) {
             this.animateDrawer(); // Запуск анимации при изменении значения drawer
-        },
-    },
-    computed: {
-        isOpenedCreateNewDialog: {
-            get() { return this.$store.getters['dialogVisibility/isOpenedCreateNewDialog'] },
-            set(value) { this.$store.commit('dialogVisibility/SET_CREATE_NEW_DIALOG_VISIBILITY', value) },
-        },
-        isOpenedFilterDialog: {
-            get() { return this.$store.getters['dialogVisibility/isOpenedFilterDialog'] },
-            set(value) { this.$store.commit('dialogVisibility/SET_FILTER_DIALOG_VISIBILITY', value) },
         },
     },
     methods: {

@@ -69,7 +69,8 @@ class Service
         $stats = GameStat::create($data);
 
         if (isset($stats)) {
-            GeneralizedStats::setAllBestStats($data['season_id']);
+            $totalsRow = Total::whereUserId($data['user_id'])->whereSeasonId($data['season_id'])->first();
+            GeneralizedStats::setAllBestStats($data['season_id'], $totalsRow->id);
             return response()->json(['message' => 'Row created successfully.']);
         }
         return response()->json(['message' => 'Row not created.']);

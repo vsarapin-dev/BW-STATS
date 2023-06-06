@@ -14,6 +14,7 @@ import BaseExcelImportModule from "./modules/Excel/BaseExcelImportModule";
 import CommonSnackBarModule from "./modules/Сommon/CommonSnackBarModule";
 import CommonDialoguesVisibilityModule from "./modules/Сommon/CommonDialoguesVisibilityModule";
 import DialogCreateModule from "./modules/BroodWarDialogues/DialogCreateModule";
+import DialogFilterModule from "./modules/BroodWarDialogues/DialogFilterModule";
 
 Vue.use(Vuex)
 
@@ -37,11 +38,15 @@ const store = new Vuex.Store({
         snackbar: { namespaced: true, ...CommonSnackBarModule },
         dialogVisibility: { namespaced: true, ...CommonDialoguesVisibilityModule },
         dialog: { namespaced: true, ...DialogCreateModule },
+        dialogFilter: { namespaced: true, ...DialogFilterModule },
     },
     getters: {
         selectedSeason: state => state.seasons.selectedSeason,
     },
     actions: {
+        getData({ dispatch }) {
+            dispatch('statistic/getData');
+        },
         resetState({ commit }){
             commit('statistic/RESET_STATE');
             commit('generalTotals/RESET_STATE');

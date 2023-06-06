@@ -32,6 +32,13 @@
                 <v-btn color="success" @click="importFile">Import</v-btn>
             </v-card-actions>
         </v-card>
+        <v-card class="mt-5">
+            <v-card-text>
+                <v-img
+                    src="/img/example.png"
+                ></v-img>
+            </v-card-text>
+        </v-card>
     </div>
 </template>
 

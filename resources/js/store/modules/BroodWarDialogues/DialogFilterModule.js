@@ -2,22 +2,25 @@ import API from "../../../api";
 
 export default {
     state: () => ({
-        enemyCurrentMmr: 0,
-        enemyBestMmr: 0,
+        findNicknameLoader: false,
+        findLoginLoader: false,
+        enemyMinMmr: 0,
+        enemyMaxMmr: 0,
         resultComment: '',
+        enemyLoginSearch: '',
         globalComment: '',
         mapSelected: '',
         resultSelected: '',
         myRaceSelected: '',
         enemyRandomRaceSelected: '',
         enemyRaceSelected: '',
-        enemyNickname: '',
         enemyLogin: '',
         maps: [],
+        filterValues: {},
         gameResults: [],
+        enemyLogins: [],
         myRaces: [],
         enemyRaces: [],
-
         enemyRaceError: '',
         mapError: '',
         myRaceError: '',
@@ -25,40 +28,53 @@ export default {
         enemyRandomRaceError: '',
     }),
     getters: {
-        enemyCurrentMmr: state => state.enemyCurrentMmr,
-        enemyBestMmr: state => state.enemyBestMmr,
+        filterValues: state => state.filterValues,
+        findNicknameLoader: state => state.findNicknameLoader,
+        findLoginLoader: state => state.findLoginLoader,
+        enemyMinMmr: state => state.enemyMinMmr,
+        enemyMaxMmr: state => state.enemyMaxMmr,
         resultComment: state => state.resultComment,
+        enemyLoginSearch: state => state.enemyLoginSearch,
         globalComment: state => state.globalComment,
         mapSelected: state => state.mapSelected,
         resultSelected: state => state.resultSelected,
         myRaceSelected: state => state.myRaceSelected,
         enemyRandomRaceSelected: state => state.enemyRandomRaceSelected,
         enemyRaceSelected: state => state.enemyRaceSelected,
-        enemyNickname: state => state.enemyNickname,
         enemyLogin: state => state.enemyLogin,
         maps: state => state.maps,
         gameResults: state => state.gameResults,
+        enemyLogins: state => state.enemyLogins,
         myRaces: state => state.myRaces,
         enemyRaces: state => state.enemyRaces,
-
         enemyRaceError: state => state.enemyRaceError,
         mapError: state => state.mapError,
         myRaceError: state => state.myRaceError,
         resultError: state => state.resultError,
         enemyRandomRaceError: state => state.enemyRandomRaceError,
+
     },
     mutations: {
-        SET_ENEMY_RACE_SELECTED(state, value) {
-            state.enemyRaceSelected = value;
+        SET_FILTER_VALUES(state, value) {
+            state.filterValues = value;
         },
-        SET_ENEMY_CURRENT_MMR(state, value) {
-            state.enemyCurrentMmr = value;
+        SET_FIND_NICKNAME_LOADER(state, value) {
+            state.findNicknameLoader = value;
         },
-        SET_ENEMY_BEST_MMR(state, value) {
-            state.enemyBestMmr = value;
+        SET_FIND_LOGIN_LOADER(state, value) {
+            state.findLoginLoader = value;
+        },
+        SET_ENEMY_MIN_MMR(state, value) {
+            state.enemyMinMmr = value;
+        },
+        SET_ENEMY_MAX_MMR(state, value) {
+            state.enemyMaxMmr = value;
         },
         SET_RESULT_COMMENT(state, value) {
             state.resultComment = value;
+        },
+        SET_ENEMY_LOGIN_SEARCH(state, value) {
+            state.enemyLoginSearch = value;
         },
         SET_GLOBAL_COMMENT(state, value) {
             state.globalComment = value;
@@ -75,11 +91,14 @@ export default {
         SET_ENEMY_RANDOM_RACE_SELECTED(state, value) {
             state.enemyRandomRaceSelected = value;
         },
-        SET_ENEMY_NICKNAME(state, value) {
-            state.enemyNickname = value;
+        SET_ENEMY_RACE_SELECTED(state, value) {
+            state.enemyRaceSelected = value;
         },
         SET_ENEMY_LOGIN(state, value) {
             state.enemyLogin = value;
+        },
+        SET_ENEMY_LOGINS(state, value) {
+            state.enemyLogins = value;
         },
         SET_MAPS(state, value) {
             state.maps = value;
@@ -110,18 +129,18 @@ export default {
         },
     },
     actions: {
-        storeData({rootGetters, dispatch, commit}, data) {
-            API.post('/api/auth/store-stats', {
-                ...data,
+        getLogin({commit, rootGetters}, value) {
+            API.post('/api/auth/filters/find-logins', {
+                enemy_login: value,
                 season_id: rootGetters['selectedSeason'],
             })
-                .then(() => {
-                    commit('dialogVisibility/SET_CREATE_NEW_DIALOG_VISIBILITY', false, { root: true });
-                    dispatch('getData', rootGetters['selectedSeason'], { root: true });
+                .then(res => {
+                    commit('SET_ENEMY_LOGINS', res.data.enemy_logins);
+                    commit('SET_FIND_LOGIN_LOADER', false);
                 })
                 .catch(e => {
-                    dispatch('showErrors',e);
-                    console.log(e);
+                    commit('SET_FIND_LOGIN_LOADER', false);
+                    console.log(e.response);
                 })
         },
         storeStats({state, dispatch}) {
@@ -192,6 +211,41 @@ export default {
                 })
             }
         },
+        filterStats({state, dispatch, commit}) {
+            commit('SET_FILTER_VALUES', {
+                enemy_min_mmr: state.enemyMinMmr,
+                enemy_max_mmr: state.enemyMaxMmr,
+                enemy_login: state.enemyLogin,
+                map_id: state.mapSelected,
+                result_comment: state.resultComment,
+                global_comment: state.globalComment,
+                result_id: state.resultSelected,
+                my_race_id: state.myRaceSelected,
+                enemy_random_race_id: state.enemyRandomRaceSelected,
+                enemy_race_id: state.enemyRaceSelected,
+            })
+
+            dispatch('removeEmptyOnFilteredData')
+            dispatch('checkForZerosInMmrFilter');
+            dispatch('convertMmrToNumbers');
+        },
+        removeEmptyOnFilteredData({state}) {
+            for (const [key, value] of Object.entries(state.filterValues)) {
+                if (value !== null && value !== "") {
+                    state.filterValues[key] = value;
+                }
+            }
+        },
+        checkForZerosInMmrFilter({state}) {
+            if (state.filterValues.enemy_max_mmr === 0) {
+                state.filterValues.enemy_max_mmr = 10000;
+            }
+        },
+        convertMmrToNumbers({state}) {
+            state.filterValues.enemy_mmr_between = [Number(state.filterValues.enemy_min_mmr), Number(state.filterValues.enemy_max_mmr)];
+            delete state.filterValues['enemy_max_mmr'];
+            delete state.filterValues['enemy_min_mmr'];
+        },
         resetErrors({ commit}) {
             commit('SET_ENEMY_RACE_ERROR', '')
             commit('SET_MAP_ERROR', '')
@@ -199,24 +253,23 @@ export default {
             commit('SET_RESULT_ERROR', '')
             commit('SET_ENEMY_RANDOM_RACE_ERROR', '')
         },
-        resetValues({dispatch, commit}) {
-            dispatch('resetErrors');
-
-            commit('SET_ENEMY_CURRENT_MMR', 0);
-            commit('SET_ENEMY_BEST_MMR', 0);
-            commit('SET_ENEMY_NICKNAME', '');
+        resetValues({commit}) {
             commit('SET_ENEMY_LOGIN', '');
             commit('SET_RESULT_COMMENT', '');
             commit('SET_GLOBAL_COMMENT', '');
-            commit('SET_MAPS', []);
+            commit('SET_MAP_SELECTED', '');
             commit('SET_RESULT_SELECTED', '');
             commit('SET_MY_RACE_SELECTED', '');
             commit('SET_ENEMY_RANDOM_RACE_SELECTED', '');
-            commit('SET_MAP_SELECTED', '');
+            commit('SET_ENEMY_RACE_SELECTED', '');
+            commit('SET_MAPS', []);
             commit('SET_GAME_RESULTS', []);
             commit('SET_MY_RACES', []);
             commit('SET_ENEMY_RACES', []);
-            commit('SET_ENEMY_RACE_SELECTED', '');
+            commit('SET_ENEMY_LOGIN_SEARCH', '');
+            commit('SET_ENEMY_MIN_MMR', 0);
+            commit('SET_ENEMY_MAX_MMR', 0);
+            commit('SET_ENEMY_LOGINS', []);
         }
     }
 }

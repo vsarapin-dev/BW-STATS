@@ -7,7 +7,7 @@
                 v-model="updatePanel"
                 multiple
             >
-                <v-expansion-panel>
+                <v-expansion-panel :disabled="!selectedSeason">
                     <v-expansion-panel-header>Full Stats</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <BaseTotals/>
@@ -65,7 +65,7 @@
             </template>
             <template v-slot:header.data-table-select>
                 <v-checkbox
-                    v-model="$store.getters['statistic/allRowsSelected']"
+                    v-model="allRowsSelected"
                     color="red"
                     hide-details
                 >
@@ -83,6 +83,7 @@
                         <v-col class="pb-0">
                             <div class="d-flex">
                                 <v-btn
+                                    :disabled="!selectedSeason"
                                     small
                                     class="ml-3"
                                     color="secondary"
@@ -93,6 +94,7 @@
                                     Add game
                                 </v-btn>
                                 <v-btn
+                                    :disabled="!selectedSeason"
                                     small
                                     class="ml-3"
                                     color="secondary"
@@ -104,6 +106,7 @@
                                 </v-btn>
                                 <div style="width: 100px">
                                     <v-select
+                                        :disabled="!selectedSeason"
                                         :items="$store.getters['seasons/availableSeasons']"
                                         v-model="selectedSeason"
                                         @change="changeSeason"
@@ -120,6 +123,7 @@
                                     </v-select>
                                 </div>
                                 <v-btn
+                                    :disabled="!selectedSeason"
                                     small
                                     class="ml-3"
                                     color="error"
@@ -133,7 +137,7 @@
                         </v-col>
                         <v-col class="d-flex justify-end">
                             <v-btn
-                                v-if="selectedToDelete.length > 0 || $store.getters['statistic/allRowsSelected'] === true"
+                                v-if="selectedToDelete.length > 0 || allRowsSelected === true"
                                 small
                                 class="ml-3"
                                 color="red"
@@ -193,9 +197,6 @@ export default {
     data() {
         return {
             filterValues: {},
-            shouldUpdateRow: false,
-            selectedToDelete: [],
-            createEditHeaderName: null,
         }
     },
     watch: {
@@ -203,6 +204,8 @@ export default {
             handler: function (newSeasonValue) {
                 if (newSeasonValue !== null) {
                     this.loadData(newSeasonValue);
+                } else {
+                    this.loadData(null);
                 }
             },
         },
@@ -228,6 +231,14 @@ export default {
         this.$store.dispatch('seasons/getData');
     },
     computed: {
+        selectedToDelete: {
+            get() { return this.$store.getters['statistic/selectedToDelete'] },
+            set(value) { this.$store.commit('statistic/SET_SELECTED_TO_DELETE', value) },
+        },
+        allRowsSelected: {
+            get() { return this.$store.getters['statistic/allRowsSelected'] },
+            set(value) { this.$store.commit('statistic/SET_ALL_ROWS_SELECTED', value) },
+        },
         page: {
             get() { return this.$store.getters['statistic/page'] },
             set(value) { this.$store.commit('statistic/SET_PAGE', value) },
@@ -310,7 +321,7 @@ export default {
                 this.$store.dispatch('mmrWinrate/getData', seasonId);
                 this.$store.dispatch('mapRace/getData', seasonId);
                 this.$store.dispatch('mmrMapRace/getData', seasonId);
-                this.$store.dispatch('statistic/getData', seasonId);
+                this.$store.dispatch('statistic/getData');
             }
         },
         customSort(column) {
@@ -346,38 +357,7 @@ export default {
             this.$store.dispatch('statistic/getData');
         },
         deleteData() {
-            if (window.confirm("Are you sure want to delete this rows?")) {
-                this.$store.commit('statistic/SET_LOADING_DATA', true);
-
-                let ids = this.selectedToDelete.map(i => i.id);
-                this.selectedToDelete = [];
-
-                let data = {
-                    season_id: this.selectedSeason,
-                };
-
-                data = this.allRowsSelected ?
-                    {
-                        ...data,
-                        delete_all: this.allRowsSelected,
-                    } :
-                    {
-                        ...data,
-                        ids: ids,
-                    };
-
-                API.post('/api/auth/delete-stats', data)
-                    .then(res => {
-                        this.$store.commit('statistic/SET_LOADING_DATA', false);
-                        this.resetVariables();
-                    })
-                    .catch(e => {
-                        this.$store.commit('statistic/SET_LOADING_DATA', false);
-                        console.log(e.response)
-                    })
-                this.$store.commit('statistic/SET_SELECTED_SEASON', null);
-                this.$store.dispatch('statistic/getData');
-            }
+            this.$store.dispatch('statistic/deleteData');
         },
         resetState() {
             this.$store.dispatch('resetState');
@@ -390,12 +370,8 @@ export default {
         },
         pageChanged(page) {
             this.page = page;
-            this.$store.dispatch('statistic/getData', this.selectedSeason);
+            this.$store.dispatch('statistic/getData');
         },
     }
 }
 </script>
-
-<style>
-
-</style>

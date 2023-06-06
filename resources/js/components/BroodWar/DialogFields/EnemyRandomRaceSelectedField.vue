@@ -23,6 +23,12 @@
 </template>
 <script>
 export default {
+    props: {
+        isFilter: {
+            type: Boolean,
+            default: false,
+        },
+    },
     computed: {
         enemyRaces: {
             get() { return this.$store.getters['dialog/enemyRaces'] },
@@ -45,7 +51,11 @@ export default {
                     this.enemyRaces.filter(i => i.name === 'Random').length > 0 &&
                     this.enemyRaceSelected === this.enemyRaces.filter(i => i.name === 'Random')[0].id) === false) {
 
-                    this.$store.commit('dialog/SET_ENEMY_RANDOM_RACE_SELECTED', '');
+                    if (this.isFilter === true) {
+                        this.$store.commit('dialogFilter/SET_ENEMY_RANDOM_RACE_SELECTED', '');
+                    } else {
+                        this.$store.commit('dialog/SET_ENEMY_RANDOM_RACE_SELECTED', '')
+                    }
 
                     return true;
                 }
