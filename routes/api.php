@@ -56,7 +56,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
             Route::post('/update', 'StoreController')->name('totals.update');
         });
 
-        Route::group(['namespace' => 'filters', 'prefix' => 'filters'], function () {
+        Route::group(['namespace' => 'Filters', 'prefix' => 'filters'], function () {
             Route::post('/results', 'ResultsController')->name('get.results.list');
             Route::post('/maps', 'MapsController')->name('get.maps.list');
             Route::post('/races', 'RacesController')->name('get.races.list');
