@@ -117,7 +117,7 @@ export default {
             })
                 .then(() => {
                     commit('dialogVisibility/SET_CREATE_NEW_DIALOG_VISIBILITY', false, { root: true });
-                    dispatch('getData', rootGetters['selectedSeason'], { root: true });
+                    dispatch('getData', { root: true });
                 })
                 .catch(e => {
                     dispatch('showErrors',e);

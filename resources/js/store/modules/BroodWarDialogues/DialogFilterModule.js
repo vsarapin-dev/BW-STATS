@@ -129,7 +129,7 @@ export default {
         },
     },
     actions: {
-        getLogin({commit, rootGetters}, value) {
+        getLogins({commit, rootGetters}, value) {
             API.post('/api/auth/filters/find-logins', {
                 enemy_login: value,
                 season_id: rootGetters['selectedSeason'],
@@ -143,22 +143,6 @@ export default {
                     console.log(e.response);
                 })
         },
-        storeStats({state, dispatch}) {
-            dispatch('resetErrors');
-            dispatch('storeData', {
-                enemy_current_mmr: state.enemyCurrentMmr,
-                enemy_max_mmr: state.enemyBestMmr,
-                enemy_nickname: state.enemyNickname,
-                enemy_login: state.enemyLogin,
-                map_id: state.mapSelected,
-                result_comment: state.resultComment,
-                global_comment: state.globalComment,
-                result_id: state.resultSelected,
-                my_race_id: state.myRaceSelected,
-                enemy_random_race_id: state.enemyRandomRaceSelected,
-                enemy_race_id: state.enemyRaceSelected,
-            });
-        },
         getResultsFilters({commit}) {
             API.post('/api/auth/filters/results')
                 .then(res => {
@@ -168,7 +152,7 @@ export default {
                     console.log(e.response)
                 })
         },
-        getMapsFilters({state, commit}) {
+        getMapsFilters({commit}) {
             API.post('/api/auth/filters/maps')
                 .then(res => {
                     commit('SET_MAPS', res.data.maps);
@@ -228,19 +212,23 @@ export default {
             dispatch('removeEmptyOnFilteredData')
             dispatch('checkForZerosInMmrFilter');
             dispatch('convertMmrToNumbers');
-            console.log(state.filterValues);
+            dispatch('getData', null, { root: true });
         },
-        removeEmptyOnFilteredData({state}) {
+        removeEmptyOnFilteredData({state, commit}) {
+            let tmpFilterValues = {};
             for (const [key, value] of Object.entries(state.filterValues)) {
                 if (value !== null && value !== "") {
-                    state.filterValues[key] = value;
+                    tmpFilterValues[key] = value;
                 }
             }
+            commit('SET_FILTER_VALUES', tmpFilterValues);
         },
-        checkForZerosInMmrFilter({state}) {
+        checkForZerosInMmrFilter({state, commit}) {
+            let tmpFilterValues = {...state.filterValues};
             if (state.filterValues.enemy_max_mmr === 0) {
-                state.filterValues.enemy_max_mmr = 10000;
+                tmpFilterValues.enemy_max_mmr = 10000;
             }
+            commit('SET_FILTER_VALUES', tmpFilterValues);
         },
         convertMmrToNumbers({state}) {
             state.filterValues.enemy_mmr_between = [Number(state.filterValues.enemy_min_mmr), Number(state.filterValues.enemy_max_mmr)];

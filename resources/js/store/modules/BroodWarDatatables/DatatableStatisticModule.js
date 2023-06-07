@@ -110,18 +110,22 @@ export default {
     },
     actions: {
         getData({state, commit, dispatch, rootGetters}) {
-            let url = '/api/auth/index';
-            // let url = Object.keys(this.filterValues).length > 0 ?
-            //     '/api/auth/filter' :
-            //     '/api/auth/index';
             commit('loading/SET_LOADING', true, {root: true});
-            API.post(url, {
+            console.log({
                 page: state.page,
                 sort_by: state.sortBy,
                 sort_desc: state.sortDescString,
                 itemsPerPage: state.itemsPerPage,
                 season_id: rootGetters['selectedSeason'],
-                ...this.filterValues,
+                ...rootGetters['filterValues'],
+            })
+            API.post('/api/auth/index', {
+                page: state.page,
+                sort_by: state.sortBy,
+                sort_desc: state.sortDescString,
+                itemsPerPage: state.itemsPerPage,
+                season_id: rootGetters['selectedSeason'],
+                ...rootGetters['filterValues'],
             })
                 .then(res => {
                     if (res.data.hasOwnProperty('data') &&

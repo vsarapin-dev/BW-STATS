@@ -1,7 +1,7 @@
 <template>
     <v-row justify="center">
         <v-dialog
-            v-model="show"
+            v-model="filterVisible"
             persistent
             max-width="600px"
         >
@@ -35,7 +35,7 @@
                     <v-btn
                         color="blue darken-1"
                         text
-                        @click="show = false"
+                        @click="filterVisible = false"
                     >
                         Close
                     </v-btn>
@@ -80,27 +80,21 @@ export default {
         "$store.state.dialogFilter.enemyLoginSearch": {
             handler: function (value) {
                 this.findLoginLoader = true;
-                this.getLogin(value);
+                this.getLogins(value);
             },
         },
-    },
-    computed: {
-        show: {
-            get() {
-                if (this.filterVisible === true) {
+        filterVisible: {
+            handler: function (value) {
+                if (value === true) {
                     this.resetValues();
                     this.getMapsFilters();
                     this.getRacesFilters();
                     this.getResultsFilters();
                 }
-                return this.filterVisible
             },
-            set(value) {
-                if (!value) {
-                    this.filterVisible = value;
-                }
-            }
         },
+    },
+    computed: {
         filterVisible: {
             get() { return this.$store.getters['dialogVisibility/isOpenedFilterDialog'] },
             set(value) { this.$store.commit('dialogVisibility/SET_FILTER_DIALOG_VISIBILITY', value) }
@@ -111,13 +105,12 @@ export default {
         },
     },
     methods: {
-        getLogin(value) {
-            this.$store.dispatch('dialogFilter/getLogin', value);
+        getLogins(value) {
+            this.$store.dispatch('dialogFilter/getLogins', value);
         },
         filterStats() {
             this.$store.dispatch('dialogFilter/filterStats');
-            this.$parent.filteredDataObject(data);
-            this.show = false;
+            this.filterVisible = false;
         },
         getResultsFilters() {
             this.$store.dispatch('dialogFilter/getResultsFilters');

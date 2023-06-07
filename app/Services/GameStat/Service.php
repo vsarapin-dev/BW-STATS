@@ -9,6 +9,7 @@ use App\Http\Filters\GameStatFilter;
 use App\Http\Resources\GameStat\GameStatResource;
 use App\Models\GameStat;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -20,15 +21,19 @@ class Service
 {
     public function index($data): JsonResponse
     {
-        $userStatQuery = GameStat::whereUserId(Auth::id());
+        $userId = Auth::id();
+        $userStatQuery = GameStat::whereUserId($userId);
         $gameStatLastCreatedDate = $userStatQuery->max('created_at');
 
         $lastUpdated = $gameStatLastCreatedDate ?
             Carbon::parse($gameStatLastCreatedDate)->format('d F Y') :
             null;
 
+        $query = $this->filter($data);
+
         $gameStatDataTableResult = $this->paginate(
-            GameStatResource::collection(GameStat::whereUserId(Auth::id())
+            GameStatResource::collection(
+                $query
                 ->whereSeasonId($data['season_id'])
                 ->orderBy($data['sort_by'], $data['sort_desc'])
                 ->get()),
@@ -39,22 +44,6 @@ class Service
         return response()->json([
             'data' => $gameStatDataTableResult,
             'lastUpdated' => $lastUpdated,
-        ]);
-    }
-
-    public function filter($data): JsonResponse
-    {
-        if (!$data) $data['user_id'] = Auth::id();
-
-        $filter = app()->make(GameStatFilter::class, ['queryParams' => array_filter($data)]);
-        $gameStatFilterResult = $this->paginate(
-            GameStatResource::collection(GameStat::filter($filter)->orderBy('game_number', 'desc')->get()),
-            $data['itemsPerPage'],
-            $data['page']
-        );
-
-        return response()->json([
-            'data' => $gameStatFilterResult,
         ]);
     }
 
@@ -129,4 +118,12 @@ class Service
             }
         }
     }
+
+    private function filter($data): Builder
+    {
+        $filter = app()->make(GameStatFilter::class, ['queryParams' => array_filter($data)]);
+
+        return GameStat::filter($filter);
+    }
+
 }

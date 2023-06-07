@@ -42,6 +42,7 @@ const store = new Vuex.Store({
     },
     getters: {
         selectedSeason: state => state.seasons.selectedSeason,
+        filterValues: state => state.dialogFilter.filterValues,
         bwDialogModule: state => state.dialog.isOpenedCreateNewDialog ? 'dialog' : 'dialogFilter',
     },
     actions: {

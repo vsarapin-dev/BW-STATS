@@ -10,7 +10,6 @@ use phpDocumentor\Reflection\Types\Array_;
 class GameStatFilter extends AbstractFilter
 {
     public const USER_ID = 'user_id';
-    public const SEASON_ID = 'season_id';
     public const MAP_ID = 'map_id';
     public const RESULT_ID = 'result_id';
     public const MY_RACE_ID = 'my_race_id';
@@ -28,7 +27,6 @@ class GameStatFilter extends AbstractFilter
     {
         return [
             self::USER_ID => [$this, 'userId'],
-            self::SEASON_ID => [$this, 'seasonId'],
             self::MAP_ID => [$this, 'mapId'],
             self::RESULT_ID => [$this, 'resultId'],
 
@@ -55,7 +53,7 @@ class GameStatFilter extends AbstractFilter
 
     public function enemyRandomRaceId(Builder $builder, $value)
     {
-        $builder->whereIn('enemy_random_race', $value);
+        $builder->where('enemy_random_race', $value);
     }
 
     public function enemyLogin(Builder $builder, $value)
@@ -65,12 +63,7 @@ class GameStatFilter extends AbstractFilter
 
     public function mapId(Builder $builder, $value)
     {
-        $builder->whereIn('mapId', $value);
-    }
-
-    public function seasonId(Builder $builder, $value)
-    {
-        $builder->where('season_id', $value);
+        $builder->where('map_id', $value);
     }
 
     public function enemyNickname(Builder $builder, $value)
@@ -80,12 +73,12 @@ class GameStatFilter extends AbstractFilter
 
     public function myRaceId(Builder $builder, $value)
     {
-        $builder->whereIn('my_race', $value);
+        $builder->where('my_race_id', $value);
     }
 
     public function enemyRaceId(Builder $builder, $value)
     {
-        $builder->whereIn('enemy_race', $value);
+        $builder->where('enemy_race_id', $value);
     }
 
     public function enemyMmrBetween(Builder $builder, $value)

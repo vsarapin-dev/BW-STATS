@@ -28,7 +28,6 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
 
         Route::group(['namespace' => 'GameStat'], function () {
             Route::post('/index', 'IndexController')->name('get');
-            Route::post('/filter', 'FilterController')->name('filter');
             Route::post('/store-stats', 'StoreController')->name('store');
             Route::post('/delete-stats', 'DeleteController')->name('delete');
         });
