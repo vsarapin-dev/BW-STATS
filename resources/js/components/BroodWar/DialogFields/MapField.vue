@@ -24,15 +24,15 @@
 export default {
     computed: {
         mapSelected: {
-            get() { return this.$store.getters['dialog/mapSelected'] },
-            set(value) { this.$store.commit('dialog/SET_MAP_SELECTED', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/mapSelected`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_MAP_SELECTED`, value) },
         },
         maps: {
-            get() { return this.$store.getters['dialog/maps'] },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/maps`] },
         },
         mapError: {
-            get() { return this.$store.getters['dialog/mapError'] },
-            set(value) { this.$store.commit('dialog/SET_MAP_ERROR', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/mapError`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_MAP_ERROR`, value) },
         },
     },
 }

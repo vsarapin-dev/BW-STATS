@@ -135,7 +135,7 @@ export default {
                 season_id: rootGetters['selectedSeason'],
             })
                 .then(res => {
-                    commit('SET_ENEMY_LOGINS', res.data.enemy_logins);
+                    commit('SET_ENEMY_LOGINS', res.data.enemy_logins.filter(i => !!i));
                     commit('SET_FIND_LOGIN_LOADER', false);
                 })
                 .catch(e => {
@@ -228,6 +228,7 @@ export default {
             dispatch('removeEmptyOnFilteredData')
             dispatch('checkForZerosInMmrFilter');
             dispatch('convertMmrToNumbers');
+            console.log(state.filterValues);
         },
         removeEmptyOnFilteredData({state}) {
             for (const [key, value] of Object.entries(state.filterValues)) {

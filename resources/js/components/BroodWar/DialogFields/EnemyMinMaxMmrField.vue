@@ -15,11 +15,11 @@ export default {
     computed: {
         enemyMinMmr: {
             get() { return this.$store.getters['dialogFilter/enemyMinMmr']},
-            set(value) { this.$store.commit('SET_ENEMY_MIN_MMR', value) },
+            set(value) { this.$store.commit('dialogFilter/SET_ENEMY_MIN_MMR', value) },
         },
         enemyMaxMmr: {
             get() { return this.$store.getters['dialogFilter/enemyMaxMmr']},
-            set(value) { this.$store.commit('SET_ENEMY_MAX_MMR', value) },
+            set(value) { this.$store.commit('dialogFilter/SET_ENEMY_MAX_MMR', value) },
         },
     },
 }

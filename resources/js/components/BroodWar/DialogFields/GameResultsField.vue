@@ -15,15 +15,15 @@
 export default {
     computed: {
         resultSelected: {
-            get() { return this.$store.getters['dialog/resultSelected'] },
-            set(value) { this.$store.commit('dialog/SET_RESULT_SELECTED', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/resultSelected`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_RESULT_SELECTED`, value) },
         },
         gameResults: {
-            get() { return this.$store.getters['dialog/gameResults'] },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/gameResults`] },
         },
         resultError: {
-            get() { return this.$store.getters['dialog/resultError'] },
-            set(value) { this.$store.commit('dialog/SET_RESULT_ERROR', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/resultError`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_RESULT_ERROR`, value) },
         },
     },
 }

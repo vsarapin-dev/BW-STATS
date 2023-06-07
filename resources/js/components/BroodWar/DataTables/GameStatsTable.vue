@@ -94,7 +94,7 @@
                                     Add game
                                 </v-btn>
                                 <v-btn
-                                    disabled
+                                    :disabled="!selectedSeason"
                                     small
                                     class="ml-3"
                                     color="secondary"

@@ -11,8 +11,8 @@
 export default {
     computed: {
         globalComment: {
-            get() { return this.$store.getters['dialog/globalComment'] },
-            set(value) { this.$store.commit('dialog/SET_GLOBAL_COMMENT', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/globalComment`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_GLOBAL_COMMENT`, value) },
         },
     },
 }

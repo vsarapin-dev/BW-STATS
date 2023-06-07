@@ -20,7 +20,7 @@
                             <game-results-field></game-results-field>
                             <my-race-selected-field></my-race-selected-field>
                             <enemy-race-selected-field></enemy-race-selected-field>
-                            <enemy-random-race-selected-field :isFilter="true"></enemy-random-race-selected-field>
+                            <enemy-random-race-selected-field></enemy-random-race-selected-field>
                         </v-row>
                         <v-row>
                             <result-comment-field></result-comment-field>
@@ -77,9 +77,11 @@ export default {
         EnemyLoginsField,
     },
     watch: {
-        enemyLoginSearch(val) {
-            this.findLoginLoader = true;
-            this.getLogin(val);
+        "$store.state.dialogFilter.enemyLoginSearch": {
+            handler: function (value) {
+                this.findLoginLoader = true;
+                this.getLogin(value);
+            },
         },
     },
     computed: {
@@ -102,6 +104,10 @@ export default {
         filterVisible: {
             get() { return this.$store.getters['dialogVisibility/isOpenedFilterDialog'] },
             set(value) { this.$store.commit('dialogVisibility/SET_FILTER_DIALOG_VISIBILITY', value) }
+        },
+        findLoginLoader: {
+            get() { return this.$store.getters['dialogFilter/findLoginLoader'] },
+            set(value) { this.$store.commit('dialogFilter/SET_FIND_LOGIN_LOADER', value) }
         },
     },
     methods: {

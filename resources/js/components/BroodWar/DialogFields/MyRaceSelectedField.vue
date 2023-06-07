@@ -24,15 +24,15 @@
 export default {
     computed: {
         myRaceSelected: {
-            get() { return this.$store.getters['dialog/myRaceSelected'] },
-            set(value) { this.$store.commit('dialog/SET_MY_RACE_SELECTED', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/myRaceSelected`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_MY_RACE_SELECTED`, value) },
         },
         myRaces: {
-            get() { return this.$store.getters['dialog/myRaces'] },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/myRaces`] },
         },
         myRaceError: {
-            get() { return this.$store.getters['dialog/myRaceError'] },
-            set(value) { this.$store.commit('dialog/SET_MY_RACE_ERROR', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/myRaceError`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_MY_RACE_ERROR`, value) },
         },
     },
 }

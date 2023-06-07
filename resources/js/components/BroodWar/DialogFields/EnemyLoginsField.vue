@@ -29,7 +29,7 @@ export default {
 
         enemyLogin: {
             get() { return this.$store.getters['dialogFilter/enemyLogin']},
-            set(value) { this.$store.commit('SET_ENEMY_LOGIN', value) },
+            set(value) { this.$store.commit('dialogFilter/SET_ENEMY_LOGIN', value) },
         },
     },
 }

@@ -23,41 +23,30 @@
 </template>
 <script>
 export default {
-    props: {
-        isFilter: {
-            type: Boolean,
-            default: false,
-        },
-    },
     computed: {
         enemyRaces: {
-            get() { return this.$store.getters['dialog/enemyRaces'] },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/enemyRaces`] },
         },
         enemyRandomRaceSelected: {
-            get() { return this.$store.getters['dialog/enemyRandomRaceSelected'] },
-            set(value) { this.$store.commit('dialog/SET_ENEMY_RANDOM_RACE_SELECTED', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/enemyRandomRaceSelected`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_ENEMY_RANDOM_RACE_SELECTED`, value) },
         },
         enemyRandomRaceError: {
-            get() { return this.$store.getters['dialog/enemyRandomRaceError'] },
-            set(value) { this.$store.commit('dialog/SET_ENEMY_RANDOM_RACE_ERROR', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/enemyRandomRaceError`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_ENEMY_RANDOM_RACE_ERROR`, value) },
         },
         enemyRaceSelected: {
-            get() { return this.$store.getters['dialog/enemyRaceSelected'] },
-            set(value) { this.$store.commit('dialog/SET_ENEMY_RACE_SELECTED', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/enemyRaceSelected`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_ENEMY_RACE_SELECTED`, value) },
         },
         shouldEnableRandomRace: {
             get() {
                 if ((this.enemyRaceSelected !== null &&
-                    this.enemyRaces.filter(i => i.name === 'Random').length > 0 &&
-                    this.enemyRaceSelected === this.enemyRaces.filter(i => i.name === 'Random')[0].id) === false) {
+                    this.enemyRaces.filter(i => i.name === `Random`).length > 0 &&
+                    this.enemyRaceSelected === this.enemyRaces.filter(i => i.name === `Random`)[0].id) === false) {
 
-                    if (this.isFilter === true) {
-                        this.$store.commit('dialogFilter/SET_ENEMY_RANDOM_RACE_SELECTED', '');
-                    } else {
-                        this.$store.commit('dialog/SET_ENEMY_RANDOM_RACE_SELECTED', '')
-                    }
-
-                    return true;
+                        this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_ENEMY_RANDOM_RACE_SELECTED`, ``);
+                        return true;
                 }
                 return false;
             },

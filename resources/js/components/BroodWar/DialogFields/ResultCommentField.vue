@@ -11,8 +11,8 @@
 export default {
     computed: {
         resultComment: {
-            get() { return this.$store.getters['dialog/resultComment'] },
-            set(value) { this.$store.commit('dialog/SET_RESULT_COMMENT', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/resultComment`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_RESULT_COMMENT`, value) },
         },
     },
 }

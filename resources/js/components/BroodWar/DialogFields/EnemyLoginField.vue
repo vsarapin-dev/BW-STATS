@@ -7,8 +7,8 @@
 export default {
     computed: {
         enemyLogin: {
-            get() { return this.$store.getters['dialog/enemyLogin'] },
-            set(value) { this.$store.commit('dialog/SET_ENEMY_LOGIN', value) },
+            get() { return this.$store.getters[`${this.$store.getters.bwDialogModule}/enemyLogin`] },
+            set(value) { this.$store.commit(`${this.$store.getters.bwDialogModule}/SET_ENEMY_LOGIN`, value) },
         },
     },
 }
