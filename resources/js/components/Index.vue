@@ -85,6 +85,7 @@ export default {
             items: [
                 {title: 'Import', icon: 'mdi-file-arrow-left-right-outline', 'path': '/file-import'},
                 {title: 'Home', icon: 'mdi-view-dashboard', 'path': '/game-stats'},
+                {title: 'Notes', icon: 'mdi-note-multiple-outline', 'path': '/notes'},
             ],
         }
     },

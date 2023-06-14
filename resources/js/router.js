@@ -4,6 +4,7 @@ import Login from "./components/Auth/Login"
 import Registration from "./components/Auth/Registration"
 import GameStatsTable from "./components/BroodWar/DataTables/GameStatsTable"
 import ExcelImport from "./components/BroodWar/ExcelImport"
+import Notes from "./components/GlobalComponents/Notes";
 
 const router = new VueRouter({
     mode: 'history',
@@ -24,6 +25,10 @@ const router = new VueRouter({
         {
             path: '/file-import', component: ExcelImport,
             name: 'import',
+        },
+        {
+            path: '/notes', component: Notes,
+            name: 'notes',
         }
     ]
 })
