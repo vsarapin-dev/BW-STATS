@@ -37,6 +37,7 @@
                     </v-list-item-content>
                 </v-list-item>
             </v-list>
+            <v-divider></v-divider>
         </v-navigation-drawer>
 
         <v-app-bar app>
@@ -84,8 +85,9 @@ export default {
             drawer: false,
             items: [
                 {title: 'Import', icon: 'mdi-file-arrow-left-right-outline', 'path': '/file-import'},
-                {title: 'Home', icon: 'mdi-view-dashboard', 'path': '/game-stats'},
+                {title: 'Home', icon: 'mdi-view-dashboard', 'path': '/game-stats', divider: true},
                 {title: 'Notes', icon: 'mdi-note-multiple-outline', 'path': '/notes'},
+                {title: 'Files', icon: 'mdi-file-download-outline', 'path': '/files'},
             ],
         }
     },

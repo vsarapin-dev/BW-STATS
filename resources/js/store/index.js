@@ -1,5 +1,7 @@
 import Vue from "vue";
 import Vuex from 'vuex';
+
+// BroodWar
 import BaseStatisticModule from "./modules/BroodWarDatatables/DatatableStatisticModule";
 import BaseGeneralTotalsModule from "./modules/BroodWarTotalsCards/BaseGeneralTotalsModule";
 import BaseSeasonsModule from "./modules/BroodWarTotalsCards/BaseSeasonsModule";
@@ -15,6 +17,9 @@ import CommonSnackBarModule from "./modules/Сommon/CommonSnackBarModule";
 import CommonDialoguesVisibilityModule from "./modules/Сommon/CommonDialoguesVisibilityModule";
 import DialogCreateModule from "./modules/BroodWarDialogues/DialogCreateModule";
 import DialogFilterModule from "./modules/BroodWarDialogues/DialogFilterModule";
+
+// GlobalComponents
+import FilesModule from "./modules/GlobalComponents/FilesModule";
 
 Vue.use(Vuex)
 
@@ -39,6 +44,9 @@ const store = new Vuex.Store({
         dialogVisibility: { namespaced: true, ...CommonDialoguesVisibilityModule },
         dialog: { namespaced: true, ...DialogCreateModule },
         dialogFilter: { namespaced: true, ...DialogFilterModule },
+
+        // GlobalComponents
+        files: { namespaced: true, ...FilesModule },
     },
     getters: {
         selectedSeason: state => state.seasons.selectedSeason,

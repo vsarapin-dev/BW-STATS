@@ -26,7 +26,7 @@ export default {
             {text: 'Result comment', value: 'result_comment'},
             {text: 'Enemy nickname', value: 'enemy_nickname'},
             {text: 'Enemy login', value: 'enemy_login'},
-            {text: 'Global Comment', value: 'global_comment'},
+            {text: 'GlobalFunctionality Comment', value: 'global_comment'},
             {text: '', value: 'actions', sortable: false},
         ],
     }),
