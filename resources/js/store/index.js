@@ -15,6 +15,8 @@ import CommonLoaderModule from "./modules/Сommon/CommonLoaderModule";
 import BaseExcelImportModule from "./modules/Excel/BaseExcelImportModule";
 import CommonSnackBarModule from "./modules/Сommon/CommonSnackBarModule";
 import CommonDialoguesVisibilityModule from "./modules/Сommon/CommonDialoguesVisibilityModule";
+
+// Dialogues
 import DialogCreateModule from "./modules/BroodWarDialogues/DialogCreateModule";
 import DialogFilterModule from "./modules/BroodWarDialogues/DialogFilterModule";
 
@@ -41,6 +43,8 @@ const store = new Vuex.Store({
 
         loading: { namespaced: true, ...CommonLoaderModule },
         snackbar: { namespaced: true, ...CommonSnackBarModule },
+
+        // Dialogues
         dialogVisibility: { namespaced: true, ...CommonDialoguesVisibilityModule },
         dialog: { namespaced: true, ...DialogCreateModule },
         dialogFilter: { namespaced: true, ...DialogFilterModule },

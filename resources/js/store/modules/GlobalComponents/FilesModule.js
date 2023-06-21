@@ -4,18 +4,33 @@ export default {
     state: () => ({
         files: [],
         userFiles: [],
+        selectedFiles: [],
+        usersSelected: [],
+        users: [],
     }),
     getters: {
         files: state => state.files,
+        selectedFiles: state => state.selectedFiles,
         userFiles: state => state.userFiles,
+        usersSelected: state => state.usersSelected,
+        users: state => state.users,
     },
     mutations: {
+        SET_SELECTED_FILES(state, value) {
+            state.selectedFiles = value;
+        },
         SET_FILES(state, value) {
             state.files = value;
         },
         SET_USER_FILES(state, value) {
             state.userFiles = value;
-        }
+        },
+        SET_USERS_SELECTED(state, value) {
+            state.usersSelected = value;
+        },
+        SET_USERS(state, value) {
+            state.users = value;
+        },
     },
     actions: {
         getData({commit}) {
@@ -96,6 +111,32 @@ export default {
                 });
 
             commit('loading/SET_LOADING', true, { root: true });
+        },
+        shareFiles({commit, dispatch}, payload) {
+            commit('loading/SET_LOADING', true, {root: true});
+            API.post('/api/files/share', payload)
+                .then(res => {
+                    commit('snackbar/SET_SNACKBAR_OPENED', true, {root: true});
+                    commit('snackbar/SET_MESSAGE', res.data.message, {root: true});
+                    commit('loading/SET_LOADING', false, {root: true});
+                    dispatch('getData');
+                })
+                .catch(e => {
+                    console.log(e.response);
+                    commit('loading/SET_LOADING', false, {root: true});
+                });
+        },
+        getUsers({commit}) {
+            commit('loading/SET_LOADING', true, {root: true});
+            API.post('/api/files/get-users')
+                .then(res => {
+                    commit('loading/SET_LOADING', false, {root: true});
+                    commit('SET_USERS', res.data);
+                })
+                .catch(e => {
+                    console.log(e.response);
+                    commit('loading/SET_LOADING', false, {root: true});
+                });
         }
     }
 }

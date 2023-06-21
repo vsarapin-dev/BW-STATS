@@ -13,5 +13,10 @@ class File extends Model
         'name',
         'path',
         'user_id',
+        'shared_with',
+    ];
+
+    protected $casts = [
+        'shared_with' => 'array'
     ];
 }

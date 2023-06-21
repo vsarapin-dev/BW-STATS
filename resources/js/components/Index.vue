@@ -52,19 +52,18 @@
             </v-container>
         </v-main>
 
-
-        <v-footer app>
-            <!-- -->
-        </v-footer>
-
         <CreateNewGameStatRowDialogue
             ref="createNewGameStatRowDialogue"
             :headerName="$store.getters['dialogVisibility/dialogHeaderName']"
             :updateRow="$store.getters['dialogVisibility/shouldUpdateTableRow']"
         />
         <FilterGameStartDialog :seasonId="$store.getters['seasons/selectedSeason']" />
+        <DeleteAlert />
+        <FileShare />
 
-
+        <v-footer app>
+            <!-- -->
+        </v-footer>
     </v-app>
 </template>
 
@@ -75,6 +74,8 @@ import SnackBar from "./Common/SnackBar";
 import anime from 'animejs';
 import CreateNewGameStatRowDialogue from "./BroodWar/Dialogues/CreateNewGameStatRowDialogue";
 import FilterGameStartDialog from "./BroodWar/Dialogues/FilterGameStatDialogue";
+import DeleteAlert from "./Common/Dialogues/DeleteAlert";
+import FileShare from "./Common/Dialogues/FileShare";
 
 export default {
     name: "Index",
@@ -96,6 +97,8 @@ export default {
         SnackBar,
         CreateNewGameStatRowDialogue,
         FilterGameStartDialog,
+        DeleteAlert,
+        FileShare,
     },
     mounted() {
         this.getLogin();

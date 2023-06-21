@@ -34,11 +34,26 @@
                             </template>
                         </v-file-input>
                     </v-row>
-                    <v-row class="justify-center">
-                        <v-btn color="success" :disabled="files.length === 0" block @click="saveFiles">Save</v-btn>
-                        <v-btn class="mt-1" color="primary" :disabled="selectedFilesToDownload.length === 0" block @click="downloadFiles">Download</v-btn>
-                        <v-btn class="mt-1" color="error" :disabled="selectedFilesToDownload.length === 0" block @click="deleteFiles">Delete</v-btn>
-                    </v-row>
+                    <v-col>
+                        <v-row>
+                            <v-col class="xs-12 px-0">
+                                <v-btn color="success" :disabled="files.length === 0" block @click="saveFiles">Save</v-btn>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col class="xs-12 md-6 pa-0 mr-1">
+                                <v-btn class="mt-1" color="primary" :disabled="selectedFiles.length === 0" block @click="downloadFiles">Download</v-btn>
+                            </v-col>
+                            <v-col class="xs-12 md-6 pa-0 ml-1">
+                                <v-btn class="mt-1" color="error" :disabled="selectedFiles.length === 0" block @click="deleteFiles">Delete</v-btn>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col class="xs-12 px-0">
+                                <v-btn color="success" :disabled="selectedFiles.length === 0" block @click="shareFiles">Share</v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-col>
                 </v-card-text>
             </v-card>
         </v-row>
@@ -47,7 +62,7 @@
                 <v-card class="mt-3 mx-1" width="260" :key="index">
                     <v-list>
                         <v-list-item-group
-                            v-model="selectedFilesToDownload"
+                            v-model="selectedFiles"
                             multiple
                             color="indigo"
                         >
@@ -69,10 +84,14 @@
 <script>
 export default {
     name: "Files",
-    data() {
-        return {
-            selectedFilesToDownload: [],
-        }
+    watch: {
+        "$store.state.dialogVisibility.deleteApproved": {
+            handler: function (value) {
+                if (value === true) {
+                    this.deleteFiles(true);
+                }
+            },
+        },
     },
     computed: {
         userFilesGrouped() {
@@ -82,6 +101,10 @@ export default {
                 groups.push(this.userFiles.slice(i, i + groupSize));
             }
             return groups;
+        },
+        selectedFiles: {
+            get() { return this.$store.getters['files/selectedFiles'] },
+            set(value) { this.$store.commit("files/SET_SELECTED_FILES", value) }
         },
         files: {
             get() { return this.$store.getters['files/files'] },
@@ -101,14 +124,24 @@ export default {
         },
         downloadFiles() {
             this.$store.dispatch("files/downloadFiles", {
-                fileIds: this.selectedFilesToDownload.map(i => i.id),
-                filenames: this.selectedFilesToDownload.map(i => i.name),
+                fileIds: this.selectedFiles.map(i => i.id),
+                filenames: this.selectedFiles.map(i => i.name),
             });
-            this.selectedFilesToDownload = [];
+            this.selectedFiles = [];
         },
-        deleteFiles() {
-            this.$store.dispatch("files/deleteFiles", this.selectedFilesToDownload.map(i => i.id));
-            this.selectedFilesToDownload = [];
+        deleteFiles(approved) {
+            if (approved === true) {
+                this.$store.commit("dialogVisibility/SET_DELETE_APPROVED", false);
+                this.$store.dispatch("files/deleteFiles", this.selectedFiles.map(i => i.id));
+                this.selectedFiles = [];
+            } else {
+                this.$store.commit("dialogVisibility/SET_DELETE_ALERT_DIALOG_VISIBILITY",true);
+            }
+
+        },
+        shareFiles() {
+            this.$store.dispatch("files/getUsers");
+            this.$store.commit("dialogVisibility/SET_FILES_SHARE_DIALOG_VISIBILITY", true);
         }
     }
 }

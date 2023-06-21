@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('path');
+            $table->json('shared_with')->nullable();
             $table->timestamps();
         });
     }
