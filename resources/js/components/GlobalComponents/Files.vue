@@ -78,6 +78,31 @@
                 </v-card>
             </template>
         </v-row>
+        <v-divider v-if="sharedFilesGrouped.length > 0" class="mt-6"></v-divider>
+        <v-row v-if="sharedFilesGrouped.length > 0" class="justify-center my-2">
+            <span class="text-uppercase light-green--text">shared files</span>
+        </v-row>
+        <v-row class="justify-center">
+            <template v-for="(group, index) in sharedFilesGrouped">
+                <v-card class="mx-1" width="260" :key="index">
+                    <v-list>
+                        <v-list-item-group
+                            v-model="selectedFiles"
+                            multiple
+                            color="indigo"
+                        >
+                            <v-list-item v-for="(item, i) in group" :key="i" :value="item">
+                                <v-list-item-content>
+                                    <a href="#">
+                                        <v-list-item-title v-text="item.name" class="text-subtitle-1" />
+                                    </a>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-list-item-group>
+                    </v-list>
+                </v-card>
+            </template>
+        </v-row>
     </v-container>
 </template>
 
@@ -102,6 +127,14 @@ export default {
             }
             return groups;
         },
+        sharedFilesGrouped() {
+            const groupSize = 10;
+            const groups = [];
+            for (let i = 0; i < this.sharedFiles.length; i += groupSize) {
+                groups.push(this.sharedFiles.slice(i, i + groupSize));
+            }
+            return groups;
+        },
         selectedFiles: {
             get() { return this.$store.getters['files/selectedFiles'] },
             set(value) { this.$store.commit("files/SET_SELECTED_FILES", value) }
@@ -113,6 +146,10 @@ export default {
         userFiles: {
             get() { return this.$store.getters['files/userFiles'] },
             set(value) { this.$store.commit("files/SET_USER_FILES", value) }
+        },
+        sharedFiles: {
+            get() { return this.$store.getters['files/sharedFiles'] },
+            set(value) { this.$store.commit("files/SET_SHARED_FILES", value) }
         }
     },
     mounted() {

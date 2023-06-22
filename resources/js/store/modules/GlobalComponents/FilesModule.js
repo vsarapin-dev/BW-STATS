@@ -4,6 +4,7 @@ export default {
     state: () => ({
         files: [],
         userFiles: [],
+        sharedFiles: [],
         selectedFiles: [],
         usersSelected: [],
         users: [],
@@ -12,10 +13,14 @@ export default {
         files: state => state.files,
         selectedFiles: state => state.selectedFiles,
         userFiles: state => state.userFiles,
+        sharedFiles: state => state.sharedFiles,
         usersSelected: state => state.usersSelected,
         users: state => state.users,
     },
     mutations: {
+        SET_SHARED_FILES(state, value) {
+            state.sharedFiles = value;
+        },
         SET_SELECTED_FILES(state, value) {
             state.selectedFiles = value;
         },
@@ -38,6 +43,7 @@ export default {
             API.get('/api/files')
                 .then(response => {
                     commit('SET_USER_FILES', response.data.user_files);
+                    commit('SET_SHARED_FILES', response.data.shared_files);
                     commit('loading/SET_LOADING', false, {root: true});
                 })
                 .catch(e => {
@@ -98,9 +104,9 @@ export default {
             API.post('/api/files/delete-files',{
                 fileIds: fileIds,
             })
-                .then(() => {
+                .then(res => {
                     commit('snackbar/SET_SNACKBAR_OPENED', true, {root: true});
-                    commit('snackbar/SET_MESSAGE', 'Deleted successfully', {root: true});
+                    commit('snackbar/SET_MESSAGE', res.data.message, {root: true});
                     commit('SET_FILES', []);
                     commit('loading/SET_LOADING', false, {root: true});
                     dispatch('getData');

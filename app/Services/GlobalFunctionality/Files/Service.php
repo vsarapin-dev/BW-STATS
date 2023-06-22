@@ -20,10 +20,9 @@ class Service
         $userFiles = File::where('user_id', $user->id)->get();
         $sharedFiles = File::whereJsonContains('shared_with', $user->id)->get();
 
-        $allFiles = $userFiles->concat($sharedFiles);
-
         return response()->json([
-            'user_files' => $allFiles,
+            'user_files' => $userFiles,
+            'shared_files' => $sharedFiles,
         ]);
     }
 
@@ -60,22 +59,33 @@ class Service
         Storage::disk('users')->delete($filesToDelete);
         File::where('user_id', $user->id)->whereIn('id', $request->fileIds)->delete();
 
+        $message = 'Files deleted successfully';
+        if (count($filesToDelete) !== count($request->fileIds)) {
+            $message = 'Some files do not belong to you.';
+        }
+
         return response()->json([
-            'message' => 'File deleted successfully',
+            'message' => $message,
         ]);
     }
 
     public function share(Request $request): JsonResponse
     {
-        $filesToShare = File::whereIn('id', $request->fileIds)->get();
+        $user = $request->user();
+        $filesToShare = File::where('user_id', $user->id)->whereIn('id', $request->fileIds)->get();
         $filesToShare->each(function ($file) use ($request) {
             $file->update([
                 'shared_with' => $request->userIds,
             ]);
         });
 
+        $message = 'File shared successfully';
+        if (count($filesToShare) !== count($request->fileIds)) {
+            $message = 'Not all shared, some files do not belong to you.';
+        }
+
         return response()->json([
-            'message' => 'File shared successfully',
+            'message' => $message,
         ]);
     }
 
